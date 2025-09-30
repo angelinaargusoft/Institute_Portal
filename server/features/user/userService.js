@@ -13,7 +13,7 @@ async function loginUser(email, plainPassword) {
     if (!isMatch) {
         throw new Error('Invalid email or password');
     }
-    const payload = { userId: user.id, email: user.email }
+    const payload = { userId: user.id, email: user.email, roles: user.roles }
     const token = generateToken(payload);
     const refreshToken = generateRefreshToken(payload);
 
@@ -58,8 +58,39 @@ async function changePassword(id, data) {
     return userModel.changePassword(id, finalPassword);
 }
 
+async function addRole(id, role) {
+    const user = await userModel.getUserById(id);
+    if (!user) throw new Error('User not found');
+
+    // Ensure roles is parsed JSON
+    let roles = [];
+    try {
+        roles = Array.isArray(user.roles) ? user.roles : JSON.parse(user.roles);
+    } catch (e) {
+        roles = [];
+    }
+    if (!roles.includes(role)) {
+        roles.push(role);
+        return await userModel.updateRoles(id, roles);
+    }
+    return user; // no change if role already exists
+}
+
+async function removeRole(id, role) {
+    const user = await userModel.getUserById(id);
+    if (!user) throw new Error('User not found');
+    let roles = [];
+    try {
+        roles = Array.isArray(user.roles) ? user.roles : JSON.parse(user.roles);
+    } catch (e) {
+        roles = [];
+    }
+    const newRoles = roles.filter(r => r !== role);
+    return await userModel.updateRoles(id, newRoles);
+}
+
 async function deleteUser(id) {
     return userModel.deleteUser(id);
 }
 
-module.exports = { loginUser, getAllUsers, createUser, getUser, changePassword, deleteUser };
+module.exports = { loginUser, getAllUsers, createUser, getUser, changePassword, addRole, removeRole, deleteUser };

@@ -1,18 +1,8 @@
 const pool = require('../../config/database');
 const addressService = require('../address/addressService'); 
+const userService = require('../user/userService');
 
-async function getUserProfileById(userId) {
-    const query = `
-        SELECT up.*, a.addressLine, a.city, a.state, a.country, a.postalCode, a.type as addressType
-        FROM UserProfiles up
-        LEFT JOIN Addresses a ON up.addressId = a.id
-        WHERE up.id = ?
-    `;
-    const [rows] = await pool.execute(query, [userId]);
-    return rows[0];
-}
-
-async function getUserProfileByUserId(userId) {
+async function getByUserId(userId) {
     const query = `
         SELECT up.*, a.addressLine, a.city, a.state, a.country, a.postalCode, a.type as addressType
         FROM UserProfiles up
@@ -23,66 +13,102 @@ async function getUserProfileByUserId(userId) {
     return rows[0];
 }
 
-async function createUserProfile(data) {
-    const { id, userId, firstName, lastName, dob, gender, phone, address, roleSpecificDetails } = data;
-
+async function createBaseProfile(data) {
+    const { userId, firstName, lastName, dob, gender, phone, address } = data;
     let addressId = null;
     if (address) {
-        const newAddress = await addressService.createAddress(address); 
-        addressId = newAddress.id;
-    }
-
-    const profileQuery = `
-        INSERT INTO UserProfiles (id, userId, firstName, lastName, dob, gender, phone, addressId, roleSpecificDetails)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        const newAddress = await addressService.createAddress(address);
+        addressId = newAddress.id;     }
+    const query = `
+        INSERT INTO UserProfiles (userId, firstName, lastName, dob, gender, phone, addressId)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
-
-    await pool.execute(profileQuery, [
-        id, userId, firstName, lastName, dob, gender, phone, addressId, JSON.stringify(roleSpecificDetails || {})
-    ]);
-
-    return await getUserProfileById(id);
+    await pool.execute(query, [userId, firstName, lastName, dob, gender, phone, addressId]);
+    return getByUserId(userId);
 }
 
-async function updateUserProfile(id, data) {
-    const { firstName, lastName, dob, gender, phone, address, roleSpecificDetails } = data;
-    const existingProfile = await getUserProfileById(id);
-
-    let addressId = existingProfile?.addressId;
+async function updateBaseProfile(userId, data) {
+    const profile = await getByUserId(userId);
+    if (!profile) throw new Error('Profile not found');
+    const { firstName, lastName, dob, gender, phone, address } = data;
+    let addressId = profile.addressId;
     if (address) {
         if (addressId) {
             await addressService.updateAddress(addressId, address);
         } else {
             const newAddress = await addressService.createAddress(address);
-            addressId = newAddress.id;
-        }
+            addressId = newAddress.id;        }
     }
-
-    const updateProfileQuery = `
+    const query = `
         UPDATE UserProfiles
-        SET firstName = ?, lastName = ?, dob = ?, gender = ?, phone = ?, roleSpecificDetails = ?, updatedAt = CURRENT_TIMESTAMP
-        WHERE id = ?
+        SET firstName = ?, lastName = ?, dob = ?, gender = ?, phone = ?, addressId = ?, updatedAt = CURRENT_TIMESTAMP
+        WHERE userId = ?
     `;
-    await pool.execute(updateProfileQuery, [
-        firstName, lastName, dob, gender, phone, JSON.stringify(roleSpecificDetails || {}), id
-    ]);
-
-    return await getUserProfileById(id);
+    await pool.execute(query, [firstName, lastName, dob, gender, phone, addressId, userId]);
+    return getByUserId(userId);
 }
 
-async function deleteUserProfile(id) {
-    const existingProfile = await getUserProfileById(id);
-    if (!existingProfile) return;
-    await pool.execute(`DELETE FROM UserProfiles WHERE id = ?`, [id]);
-    if (existingProfile.addressId) {
-        await addressService.deleteAddress(existingProfile.addressId);
-    }
+async function updateStudentProfile(userId, studentData) {
+    const profile = await getByUserId(userId);
+    if (!profile) throw new Error('Profile not found');
+    const {
+        studentProfilePic, guardianName, guardianPhone, bloodGroup, previousSchool
+    } = studentData;
+    const query = `
+        UPDATE UserProfiles
+        SET studentProfilePic = ?, guardianName = ?, guardianPhone = ?, bloodGroup = ?, previousSchool = ?,
+            updatedAt = CURRENT_TIMESTAMP
+        WHERE userId = ?
+    `;
+    await pool.execute(query, [
+        studentProfilePic || null,
+        guardianName || null,
+        guardianPhone || null,
+        bloodGroup || null,
+        previousSchool || null,
+        userId
+    ]);
+    return getByUserId(userId);
+}
+
+async function updateFacultyProfile(userId, facultyData) {
+    const profile = await getByUserId(userId);
+    if (!profile) throw new Error('Profile not found');
+    const {
+        facultyProfilePic, designation, specialization, qualifications, yearsOfExperience
+    } = facultyData;
+    const query = `
+        UPDATE UserProfiles
+        SET facultyProfilePic = ?, designation = ?, specialization = ?, qualifications = ?, yearsOfExperience = ?,
+            updatedAt = CURRENT_TIMESTAMP
+        WHERE userId = ?
+    `;
+    await pool.execute(query, [
+        facultyProfilePic || null,
+        designation || null,
+        specialization || null,
+        qualifications || null,
+        yearsOfExperience || null,
+        userId
+    ]);
+
+    await userService.addRole(userId, 'faculty');
+    return getByUserId(userId);
+}
+
+
+async function remove(userId) {
+    const profile = await getByUserId(userId);
+    if (!profile) return;
+    await pool.execute(`DELETE FROM UserProfiles WHERE userId = ?`, [userId]);
+    if (profile.addressId) await addressService.deleteAddress(profile.addressId);
 }
 
 module.exports = {
-    getUserProfileById,
-    getUserProfileByUserId,
-    createUserProfile,
-    updateUserProfile,
-    deleteUserProfile
+    getByUserId,
+    createBaseProfile,
+    updateBaseProfile,
+    updateStudentProfile,
+    updateFacultyProfile,
+    remove
 };

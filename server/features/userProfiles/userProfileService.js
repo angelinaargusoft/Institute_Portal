@@ -1,34 +1,38 @@
 const userProfileModel = require('./userProfileModel');
-const { v4: uuidv4 } = require('uuid');
-
-async function createProfile(data) {
-    const profileData = {
-        id: uuidv4(),
-        ...data
-    };
-    return await userProfileModel.createUserProfile(profileData);
-}
-
-async function getProfileById(id) {
-    return await userProfileModel.getUserProfileById(id);
-}
 
 async function getProfileByUserId(userId) {
-    return await userProfileModel.getUserProfileByUserId(userId);
+    return await userProfileModel.getByUserId(userId);
 }
 
-async function updateProfile(id, data) {
-    return await userProfileModel.updateUserProfile(id, data);
+async function createProfile(userId, data) {
+    const profileData = {
+        userId, // userId is PK now
+        ...data
+    };
+    return await userProfileModel.createBaseProfile(profileData);
 }
 
-async function deleteProfile(id) {
-    return await userProfileModel.deleteUserProfile(id);
+async function updateBaseProfile(userId, data) {
+    return await userProfileModel.updateBaseProfile(userId, data);
+}
+
+async function updateStudentProfile(userId, studentData) {
+    return await userProfileModel.updateStudentProfile(userId, studentData);
+}
+
+async function updateFacultyProfile(userId, facultyData) {
+    return await userProfileModel.updateFacultyProfile(userId, facultyData);
+}
+
+async function deleteProfile(userId) {
+    return await userProfileModel.remove(userId);
 }
 
 module.exports = {
-    createProfile,
-    getProfileById,
     getProfileByUserId,
-    updateProfile,
+    createProfile,
+    updateBaseProfile,
+    updateStudentProfile,
+    updateFacultyProfile,
     deleteProfile
 };

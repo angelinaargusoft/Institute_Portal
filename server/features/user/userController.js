@@ -1,5 +1,5 @@
 const userService = require('./userService');
-const { verifyRefreshToken, generateToken, generateRefreshToken } = require('../../utils/helpers');
+const { verifyRefreshToken, generateToken } = require('../../utils/helpers');
 
 async function loginUser(req, res, next) {
     try {
@@ -77,9 +77,9 @@ async function getUser(req, res, next) {
 async function changePassword(req, res, next) {
     try {
         const userId = req.params.id;
-        // if(req.user.userId !== userId){
-        //     return res.status(403).json({message: 'You are not allowed to update this account'})
-        // }
+        if(req.user.userId !== userId){
+            return res.status(403).json({message: 'You are not allowed to update this account'})
+        }
         const user = await userService.changePassword(req.params.id, req.body);
         res.json(user);
     } catch (err) {
@@ -91,9 +91,9 @@ async function deleteUser(req, res, next) {
     try {
         const userId = req.params.id;
 
-        // if(req.user.userId !== userId){
-        //     return res.status(403).json({message: 'You are not allowed to delete this account'})
-        // }
+        if(req.user.userId !== userId){
+            return res.status(403).json({message: 'You are not allowed to delete this account'})
+        }
         
         await userService.deleteUser(req.params.id);
         res.status(204).end();
