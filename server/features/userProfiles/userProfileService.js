@@ -6,7 +6,7 @@ async function getProfileByUserId(userId) {
 
 async function createProfile(userId, data) {
     const profileData = {
-        userId, // userId is PK now
+        userId, 
         ...data
     };
     return await userProfileModel.createBaseProfile(profileData);

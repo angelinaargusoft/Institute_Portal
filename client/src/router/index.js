@@ -5,6 +5,7 @@ import store from "@/store";
 const LoginView = () => import("@/views/LoginView.vue");
 const RegisterView = () => import("@/views/RegisterView.vue");
 const DashboardView = () => import("@/views/DashboardView.vue");
+const UpdateProfileView = () => import("@/views/UpdateProfileView.vue")
 
 const routes = [
   {
@@ -23,6 +24,19 @@ const routes = [
     path: "/dashboard",
     name: "Dashboard",
     component: DashboardView,
+    meta: { layout: "main", requiresAuth: true },
+  },
+  {
+    path: "/user-profile/:userId/edit",
+    name: "EditProfile",
+    component: UpdateProfileView,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/update-profile",
+    name: "UpdateProfile",
+    component: UpdateProfileView,
     meta: { layout: "main", requiresAuth: true },
   },
   { path: "/", redirect: "/dashboard" }, // default
