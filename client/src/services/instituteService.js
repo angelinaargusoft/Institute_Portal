@@ -1,24 +1,17 @@
 import api from "@/plugins/axios";
-// Create new institute
-export const createInstitute = async (institute) => {
-  /*
-    Expected payload structure:
-    {
-      name,
-      email,
-      description,
-      logoUrl,
-      status,
-      createdBy,
-      address: { addressLine, city, state, country, postalCode }
-    }
-  */
- console.log(institute)
-  const response = await api.post("/institutes", institute);
-  return response.data;
-};
-// Fetch all institutes
-export const fetchInstitutes = async () => {
-  const response = await api.get("/institutes");
-  return response.data;
-};
+
+// Create a new institute
+export async function createInstitute(data) {
+  const res = await api.post("/institutes", data);
+  return res.data;
+}
+// Fetch all institutes (for admin or general listing)
+export async function fetchInstitutes() {
+  const res = await api.get("/institutes");
+  return res.data;
+}
+// Fetch institutes created by a specific user
+export async function fetchInstitutesByUser(userId) {
+  const res = await api.get(`/institutes/user/${userId}`);
+  return res.data;
+}

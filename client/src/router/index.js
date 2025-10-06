@@ -4,10 +4,12 @@ import store from "@/store";
 // Views (lazy-load recommended)
 const LoginView = () => import("@/views/LoginView.vue");
 const RegisterView = () => import("@/views/RegisterView.vue");
-const DashboardView = () => import("@/views/DashboardView.vue");
+const ProfileView = () => import("@/views/ProfileView.vue");
+const StudentProfileView = () => import("@/views/StudentProfileView.vue");
 const UpdateProfileView = () => import("@/views/UpdateProfileView.vue");
 const AddInstituteView = () => import("@/views/AddInstituteView.vue");
-
+const InstituteDetailsView = () => import("@/views/InstituteDetailsView.vue");
+const FacultyProfileView = () => import("@/views/FacultyProfileView.vue")
 const routes = [
   {
     path: "/login",
@@ -22,10 +24,23 @@ const routes = [
     meta: { layout: "auth", guest: true },
   },
   {
-    path: "/dashboard",
-    name: "Dashboard",
-    component: DashboardView,
+    path: "/profile",
+    name: "Profile",
+    component: ProfileView,
     meta: { layout: "main", requiresAuth: true },
+  },
+  {
+    path: "/profile/student",
+    name: "StudentProfile",
+    component: StudentProfileView,
+    meta: { layout: "main", requiresAuth: true }
+  },
+  {
+    path: "/profile/faculty",
+    name: "FacultyProfile",
+    component: FacultyProfileView,
+    props: true,
+    meta: { requiresAuth: true },
   },
   {
     path: "/user-profile/:userId/edit",
@@ -44,6 +59,12 @@ const routes = [
     path: "/institutes/add",
     name: "AddInstitute",
     component: AddInstituteView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/institutes/:id",
+    name: "InstituteDetails",
+    component: InstituteDetailsView,
     meta: { requiresAuth: true },
   },
   { path: "/", redirect: "/dashboard" }, // default

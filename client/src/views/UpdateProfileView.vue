@@ -86,6 +86,6 @@ const onSave = async () => {
     userId: user.value.id,
     profile: payload,
   });
-  if (ok) router.push("/dashboard");
+  if (ok) router.push("/profile");
 };
 </script>

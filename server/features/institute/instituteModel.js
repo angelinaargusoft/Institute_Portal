@@ -38,6 +38,17 @@ async function getInstituteById(id) {
     return rows[0];
 }
 
+async function getInstitutesByUserId(userId) {
+    const query = `
+        SELECT i.*, a.addressLine, a.city, a.state, a.country, a.postalCode, a.type as addressType
+        FROM Institutes i
+        LEFT JOIN Addresses a ON i.addressId = a.id         
+        WHERE i.createdBy = ?
+    `;
+    const [rows] = await pool.execute(query, [userId]);
+    return rows;
+}
+
 async function updateInstitute(id, data) {
     const { name, email, address, description, logoUrl, status } = data;
     const existingInstitute = await getInstituteById(id);
@@ -73,6 +84,7 @@ module.exports = {
     createInstitute,
     getAllInstitutes,
     getInstituteById,
+    getInstitutesByUserId,
     updateInstitute,
     deleteInstitute
 };

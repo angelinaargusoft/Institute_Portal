@@ -47,7 +47,7 @@
     
     if (ok) {
       // navigate to redirect (if any) or dashboard
-      const redirect = router.currentRoute.value.query.redirect || "/dashboard";
+      const redirect = router.currentRoute.value.query.redirect || "/profile";
       router.push(redirect);
     }
   };

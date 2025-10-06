@@ -29,6 +29,16 @@ async function getInstituteById(req, res, next) {
     }
 }
 
+async function getInstitutesByUserId(req, res, next) {
+    try {
+        const { userId } = req.params;
+        const institutes = await instituteService.getInstitutesByUserId(userId);
+        res.json(institutes);
+    } catch (err) {
+        next(err);
+    }
+}
+
 async function updateInstitute(req, res, next) {
     try {
         const updated = await instituteService.updateInstitute(req.params.id, req.body);
@@ -47,4 +57,4 @@ async function deleteInstitute(req, res, next) {
     }
 }
 
-module.exports = { createInstitute, getAllInstitutes, getInstituteById, updateInstitute, deleteInstitute };
+module.exports = { createInstitute, getAllInstitutes, getInstituteById, getInstitutesByUserId, updateInstitute, deleteInstitute };

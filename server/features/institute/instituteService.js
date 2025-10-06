@@ -23,6 +23,10 @@ async function getInstituteById(id) {
     return instituteModel.getInstituteById(id);
 }
 
+async function getInstitutesByUserId(userId) {
+    return instituteModel.getInstitutesByUserId(userId);
+}
+
 async function updateInstitute(id, data) {
     return instituteModel.updateInstitute(id, data);
 }
@@ -31,4 +35,4 @@ async function deleteInstitute(id) {
     return instituteModel.deleteInstitute(id);
 }
 
-module.exports = { createInstitute, getAllInstitutes, getInstituteById, updateInstitute, deleteInstitute };
+module.exports = { createInstitute, getAllInstitutes, getInstituteById, getInstitutesByUserId, updateInstitute, deleteInstitute };

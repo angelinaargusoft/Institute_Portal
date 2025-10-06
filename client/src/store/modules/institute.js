@@ -1,4 +1,8 @@
-import { createInstitute as apiCreateInstitute, fetchInstitutes as apiFetchInstitutes } from "@/services/instituteService";
+import {
+  createInstitute as apiCreateInstitute,
+  fetchInstitutes as apiFetchInstitutes,
+  fetchInstitutesByUser as apiFetchInstitutesByUser,
+} from "@/services/instituteService";
 const state = () => ({
   institutes: [],
   loading: false,
@@ -10,10 +14,10 @@ const getters = {
   error: (state) => state.error,
 };
 const actions = {
+  // Create a new institute
   async createInstitute({ commit }, institute) {
     commit("setLoading", true);
     try {
-      // Call backend service
       const created = await apiCreateInstitute(institute);
       commit("addInstitute", created);
       return created;
@@ -24,6 +28,7 @@ const actions = {
       commit("setLoading", false);
     }
   },
+  // Fetch all institutes (admin/global view)
   async fetchInstitutes({ commit }) {
     commit("setLoading", true);
     try {
@@ -31,6 +36,18 @@ const actions = {
       commit("setInstitutes", data);
     } catch (err) {
       commit("setError", err.message || "Failed to fetch institutes");
+    } finally {
+      commit("setLoading", false);
+    }
+  },
+  // Fetch institutes created by a specific user (for sidebar)
+  async fetchInstitutesByUser({ commit }, userId) {
+    commit("setLoading", true);
+    try {
+      const data = await apiFetchInstitutesByUser(userId);
+      commit("setInstitutes", data);
+    } catch (err) {
+      commit("setError", err.message || "Failed to fetch user's institutes");
     } finally {
       commit("setLoading", false);
     }
