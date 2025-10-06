@@ -35,37 +35,37 @@ import {
     },
     // Save or update profile
     async saveProfile({ commit }, { userId, profile }) {
-        commit("setLoading", true);
-        try {
-          const payload = {
-            ...profile,
-            userId,
-            address: {
-              addressLine: profile.addressLine,
-              city: profile.city,
-              state: profile.state,
-              country: profile.country,
-              postalCode: profile.postalCode,
-              addressType: profile.addressType,
-            },
-          };
-          let savedProfile;
-          if (!profile.id) {
-            // Create new profile
-            savedProfile = await createProfile(payload);
-          } else {
-            // Update existing profile
-            savedProfile = await updateBaseProfile(userId, payload);
-          }
-          commit("setProfile", savedProfile);
-          return true;
-        } catch (err) {
-          commit("setError", err.message);
-          return false;
-        } finally {
-          commit("setLoading", false);
+      commit("setLoading", true);
+      try {
+        const payload = {
+          ...profile,
+          userId,
+          address: {
+            addressLine: profile.address?.addressLine || "",
+            city: profile.address?.city || "",
+            state: profile.address?.state || "",
+            country: profile.address?.country || "",
+            postalCode: profile.address?.postalCode || "",
+            addressType: profile.address?.addressType || "current",
+          },
+        };
+        let savedProfile;
+        if (!profile.id) {
+          // Create new profile
+          savedProfile = await createProfile(payload);
+        } else {
+          // Update existing profile
+          savedProfile = await updateBaseProfile(userId, payload);
         }
-      }      
+        commit("setProfile", savedProfile);
+        return true;
+      } catch (err) {
+        commit("setError", err.message);
+        return false;
+      } finally {
+        commit("setLoading", false);
+      }
+    }          
   };
   const mutations = {
     setProfile(state, profile) {

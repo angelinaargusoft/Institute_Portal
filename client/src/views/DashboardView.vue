@@ -1,22 +1,54 @@
 <template>
-  <v-container>
-    <h2>User Dashboard</h2>
-    <v-card v-if="profile">
-      <v-card-title>{{ profile.firstName }} {{ profile.lastName }}</v-card-title>
-      <v-card-subtitle>{{ profile.city }}, {{ profile.state }}</v-card-subtitle>
-      <v-card-text>
-        <p><strong>DOB:</strong> {{ profile.dob }}</p>
-        <p><strong>Gender:</strong> {{ profile.gender }}</p>
-        <p><strong>Phone:</strong> {{ profile.phone }}</p>
-        <p><strong>Address:</strong> {{ profile.addressLine }}, {{ profile.city }} ({{ profile.postalCode }})</p>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn color="primary" @click="editProfile">Edit Profile</v-btn>
-      </v-card-actions>
-    </v-card>
-    <v-btn v-else color="primary" class="mt-4" @click="goToAddProfile">
-      Add Profile
-    </v-btn>
+  <v-container class="py-6">
+    <!-- Welcome message -->
+    <v-row class="mb-6" justify="center">
+      <v-col cols="12" md="8" class="text-center">
+        <h1 v-if="profile" class="display-1 font-weight-bold">Welcome, {{ profile.firstName }}!</h1>
+        <p class="subtitle-1">Here’s your profile information</p>
+      </v-col>
+    </v-row>
+    <!-- Profile Card -->
+    <v-row justify="center">
+      <v-col cols="12" md="6">
+        <v-card v-if="profile" outlined shaped elevation="2">
+          <v-card-title class="text-h5 font-weight-bold">
+            {{ profile.firstName }} {{ profile.lastName }}
+          </v-card-title>
+          <v-card-subtitle class="mb-4">
+            {{ profile.city }}, {{ profile.state }}
+          </v-card-subtitle>
+          <v-divider></v-divider>
+          <v-card-text>
+            <v-row>
+              <v-col cols="12" sm="6">
+                <strong>DOB:</strong> {{ profile.dob }}
+              </v-col>
+              <v-col cols="12" sm="6">
+                <strong>Gender:</strong> {{ profile.gender }}
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="6">
+                <strong>Phone:</strong> {{ profile.phone }}
+              </v-col>
+              <v-col cols="12" sm="6">
+                <strong>Address:</strong> {{ profile.addressLine }}, {{ profile.city }} ({{ profile.postalCode }})
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions class="justify-end">
+            <v-btn color="primary" rounded @click="editProfile">Edit Profile</v-btn>
+          </v-card-actions>
+        </v-card>
+        <!-- Add profile button if no profile -->
+        <v-card v-else outlined shaped elevation="2" class="pa-6 text-center">
+          <p class="text-h6 mb-4">You haven’t added a profile yet.</p>
+          <v-btn color="primary" rounded @click="goToAddProfile">
+            Add Profile
+          </v-btn>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 <script setup>
