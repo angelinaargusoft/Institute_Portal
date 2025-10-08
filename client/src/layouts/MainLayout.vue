@@ -5,90 +5,64 @@
       <v-toolbar-title>My App</v-toolbar-title>
       <v-spacer />
       <div v-if="user">
-        <!-- Add Institute Button -->
-        <v-btn color="primary" class="me-3" @click="goToAddInstitute">
+        <v-btn text @click="goToDashboard">
+          <v-icon left>mdi-view-dashboard</v-icon>
+          Dashboard
+        </v-btn>
+        <v-menu offset-y>
+          <template #activator="{ props }">
+            <v-btn text v-bind="props">
+              <v-icon left>mdi-account</v-icon>
+              Profiles
+              <v-icon right>mdi-chevron-down</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="goToStudentProfile">
+              <v-list-item-title>Student Profile</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="goToFacultyProfile">
+              <v-list-item-title>Faculty Profile</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <v-btn color="primary" class="mx-3" @click="goToAddInstitute">
           <v-icon left>mdi-plus-box</v-icon>
           Add Institute
         </v-btn>
-        <!-- Logout Button -->
         <v-btn text @click="onLogout">
           <v-icon>mdi-logout</v-icon>
         </v-btn>
       </div>
     </v-app-bar>
-    <!-- Sidebar -->
-    <v-navigation-drawer app permanent>
+    <!-- Sidebar (only visible on dashboard routes) -->
+    <v-navigation-drawer
+      v-if="isDashboard"
+      app
+      permanent
+      width="240"
+    >
       <v-list density="compact">
-        <!-- Dashboards -->
-        <v-list-group prepend-icon="mdi-view-dashboard">
-          <template #activator="{ props }">
-            <v-list-item v-bind="props" title="Dashboards" />
-          </template>
-          <!-- Admin Dropdown -->
-          <v-list-group prepend-icon="mdi-shield-account" value="admin">
-            <template #activator="{ props }">
-              <v-list-item v-bind="props" title="Admin" />
-            </template>
-            <RouterLink
-              v-for="inst in institutes"
-              :key="inst.id"
-              :to="`/institutes/${inst.id}`"
-              class="v-list-item"
-            >
-              <v-list-item-title>{{ inst.name }}</v-list-item-title>
-            </RouterLink>
-          </v-list-group>
-          <!-- Student Dropdown -->
-          <v-list-group prepend-icon="mdi-school" value="student">
-            <template #activator="{ props }">
-              <v-list-item v-bind="props" title="Student" />
-            </template>
-            <RouterLink
-              v-for="inst in institutes"
-              :key="inst.id"
-              :to="`/dashboard/student/${inst.id}`"
-              class="v-list-item"
-            >
-              <v-list-item-title>{{ inst.name }}</v-list-item-title>
-            </RouterLink>
-          </v-list-group>
-          <!-- Faculty Dropdown -->
-          <v-list-group prepend-icon="mdi-account-tie" value="faculty">
-            <template #activator="{ props }">
-              <v-list-item v-bind="props" title="Faculty" />
-            </template>
-            <RouterLink
-              v-for="inst in institutes"
-              :key="inst.id"
-              :to="`/dashboard/faculty/${inst.id}`"
-              class="v-list-item"
-            >
-              <v-list-item-title>{{ inst.name }}</v-list-item-title>
-            </RouterLink>
-          </v-list-group>
-        </v-list-group>
-        <!-- Profiles Section -->
-        <!-- Profiles Section -->
-        <v-list-group prepend-icon="mdi-account">
-          <template #activator="{ props }">
-            <v-list-item v-bind="props" title="Profiles" />
-          </template>
-          <!-- Student Profile -->
-          <v-list-item
-            @click="goToStudentProfile"
-          >
-            <v-list-item-title>Student</v-list-item-title>
-          </v-list-item>
-          <!-- Faculty Profile -->
-          <v-list-item
-            @click="goToFacultyProfile"
-          >
-            <v-list-item-title>Faculty</v-list-item-title>
-          </v-list-item>
-        </v-list-group>
+        <template v-if="role === 'admin'">
+          <v-list-item title="Admin Dashboard" prepend-icon="mdi-shield-account" />
+          <v-list-item title="Manage Institutes" prepend-icon="mdi-school" />
+          <v-list-item title="Reports" prepend-icon="mdi-chart-box" />
+        </template>
+        <template v-else-if="role === 'faculty'">
+          <v-list-item title="Faculty Dashboard" prepend-icon="mdi-account-tie" />
+          <v-list-item title="My Classes" prepend-icon="mdi-book" />
+          <v-list-item title="Attendance" prepend-icon="mdi-clipboard-check" />
+        </template>
+        <template v-else-if="role === 'student'">
+          <v-list-item title="Student Dashboard" prepend-icon="mdi-school" />
+          <v-list-item title="My Courses" prepend-icon="mdi-book-open" />
+          <v-list-item title="Results" prepend-icon="mdi-file-chart" />
+        </template>
+        <template v-else>
+          <v-list-item title="Dashboard Home" prepend-icon="mdi-home" />
+        </template>
       </v-list>
     </v-navigation-drawer>
-    <!-- Main Content -->
     <v-main>
       <v-container class="pa-4">
         <slot></slot>
@@ -97,30 +71,26 @@
   </v-app>
 </template>
 <script setup>
+import { computed } from "vue";
 import { useStore } from "vuex";
-import { computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
-const router = useRouter();
+import { useRouter,useRoute } from "vue-router";
 const store = useStore();
+const router = useRouter();
+const route = useRoute();
 const user = computed(() => store.getters["auth/user"]);
-const institutes = computed(() => store.getters["institute/institutes"]);
+const isDashboard = computed(() => route.path.startsWith("/dashboard"));
+const goToAddInstitute = () => router.push("/institutes/add");
+const goToStudentProfile = () => router.push("/profile/student");
+const goToFacultyProfile = () => router.push("/profile/faculty");
 const onLogout = () => {
   store.dispatch("auth/logout");
   window.location.href = "/login";
 };
-const goToAddInstitute = () => {
-  router.push("/institutes/add");
+const goToDashboard = async () => {
+  await router.push("/home");
+  setTimeout(() => {
+    const section = document.getElementById("my-institutes");
+    if (section) section.scrollIntoView({ behavior: "smooth" });
+  }, 400);
 };
-const goToStudentProfile = () => {
-  router.push(`/profile/student`);
-};
-const goToFacultyProfile = () => {
-  router.push(`/profile/faculty`);
-};
-// Load institutes on mount
-onMounted(async () => {
-  if (user.value?.id) {
-    await store.dispatch("institute/fetchInstitutesByUser", user.value.id);
-  }
-});
 </script>

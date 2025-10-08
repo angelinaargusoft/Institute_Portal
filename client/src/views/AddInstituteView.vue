@@ -57,7 +57,7 @@
     loading.value = true;
     try {
       await store.dispatch("institute/createInstitute", institute);
-      router.push("/dashboard");
+      router.push("/home");
     } catch (err) {
       error.value = err.message || "Failed to create institute";
     } finally {

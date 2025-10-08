@@ -46,8 +46,8 @@
     });
     
     if (ok) {
-      // navigate to redirect (if any) or dashboard
-      const redirect = router.currentRoute.value.query.redirect || "/profile";
+      // navigate to redirect (if any) or home
+      const redirect = router.currentRoute.value.query.redirect || "/home";
       router.push(redirect);
     }
   };

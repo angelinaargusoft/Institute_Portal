@@ -4,9 +4,9 @@
     <h2 class="mb-4">{{ isEdit ? "Edit Profile" : "Add Profile" }}</h2>
     <!-- Error Alert -->
     <v-alert v-if="error" type="error" dense class="mb-4">{{ error }}</v-alert>
-    <!-- Profile Form -->
+    <!-- Base Profile Form -->
     <base-profile-form v-model="localProfile" />
-    <!-- Save Button -->
+    <!-- Save / Update Button -->
     <v-btn
       color="primary"
       :loading="loading"
@@ -15,6 +15,32 @@
     >
       {{ isEdit ? "Update Profile" : "Create Profile" }}
     </v-btn>
+    <!-- Divider -->
+    <v-divider class="my-6" />
+    <!-- Add Student / Faculty Profile Options -->
+    <v-card v-if="isEdit" outlined class="pa-4">
+      <h3 class="mb-4">Add Additional Profile Details</h3>
+      <v-row justify="center" align="center" class="mt-2">
+        <v-col cols="12" md="6" class="text-center">
+          <v-btn
+            color="secondary"
+            @click="goToStudentProfile"
+            block
+          >
+            :heavy_plus_sign: Add Student Profile
+          </v-btn>
+        </v-col>
+        <v-col cols="12" md="6" class="text-center">
+          <v-btn
+            color="success"
+            @click="goToFacultyProfile"
+            block
+          >
+            :heavy_plus_sign: Add Faculty Profile
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-card>
   </v-container>
 </template>
 <script setup>
@@ -29,7 +55,7 @@ const user = computed(() => store.getters["auth/user"]);
 const profileFromStore = computed(() => store.getters["userProfile/profile"]);
 const loading = computed(() => store.getters["userProfile/loading"]);
 const error = computed(() => store.getters["userProfile/error"]);
-// --- Local reactive profile for v-model ---
+// --- Local reactive profile ---
 const localProfile = ref({
   firstName: "",
   lastName: "",
@@ -46,13 +72,12 @@ const localProfile = ref({
   },
 });
 const isEdit = ref(false);
-// --- Load existing profile if available ---
+// --- Load existing profile ---
 onMounted(async () => {
   if (!user.value?.id) return;
   await store.dispatch("userProfile/fetchProfile", user.value.id);
-  const existing = store.getters["userProfile/profile"];
+  const existing = profileFromStore.value;
   if (existing) {
-    // Prefill localProfile safely
     localProfile.value = {
       firstName: existing.firstName || "",
       lastName: existing.lastName || "",
@@ -76,7 +101,6 @@ onMounted(async () => {
 // --- Save / Update Profile ---
 const onSave = async () => {
   if (!user.value?.id) return;
-  // Prepare payload exactly as backend expects
   const payload = {
     ...localProfile.value,
     userId: user.value.id,
@@ -86,6 +110,20 @@ const onSave = async () => {
     userId: user.value.id,
     profile: payload,
   });
-  if (ok) router.push("/profile");
+  if (ok) {
+    isEdit.value = true; // Enable student/faculty options
+  }
+};
+// --- Navigation ---
+const goToStudentProfile = () => {
+  router.push("/student-profile");
+};
+const goToFacultyProfile = () => {
+  router.push("/faculty-profile");
 };
 </script>
+<style scoped>
+h3 {
+  font-weight: 600;
+}
+</style>

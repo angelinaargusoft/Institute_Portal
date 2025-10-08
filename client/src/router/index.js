@@ -4,11 +4,11 @@ import store from "@/store";
 // Views (lazy-load recommended)
 const LoginView = () => import("@/views/LoginView.vue");
 const RegisterView = () => import("@/views/RegisterView.vue");
-const ProfileView = () => import("@/views/ProfileView.vue");
+const HomeView = () => import("@/views/HomeView.vue");
 const StudentProfileView = () => import("@/views/StudentProfileView.vue");
 const UpdateProfileView = () => import("@/views/UpdateProfileView.vue");
 const AddInstituteView = () => import("@/views/AddInstituteView.vue");
-const InstituteDetailsView = () => import("@/views/InstituteDetailsView.vue");
+const AdminDashboardView = () => import("@/views/AdminDashboardView.vue");
 const FacultyProfileView = () => import("@/views/FacultyProfileView.vue")
 const routes = [
   {
@@ -24,9 +24,9 @@ const routes = [
     meta: { layout: "auth", guest: true },
   },
   {
-    path: "/profile",
-    name: "Profile",
-    component: ProfileView,
+    path: "/home",
+    name: "Home",
+    component: HomeView,
     meta: { layout: "main", requiresAuth: true },
   },
   {
@@ -62,12 +62,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/institutes/:id",
-    name: "InstituteDetails",
-    component: InstituteDetailsView,
+    path: "/dashboard/admin/:id",
+    name: "AdminDashboard",
+    component: AdminDashboardView,
     meta: { requiresAuth: true },
   },
-  { path: "/", redirect: "/dashboard" }, // default
+  { path: "/", redirect: "/home" }, // default
 ];
 
 const router = createRouter({
