@@ -7,6 +7,7 @@ const instituteApi = require('./features/institute/instituteApi');
 const addressApi = require('./features/address/addressApi');
 const userProfileApi = require('./features/userProfile/userProfileApi');
 const academicSessionApi = require('./features/academicSession/academicSessionApi');
+const termApi = require('./features/term/termApi');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use('/api/institutes', instituteApi);
 app.use('/api/addresses', addressApi);
 app.use('/api/userProfiles', userProfileApi);
 app.use('/api/sessions', academicSessionApi);
+app.use('/api/terms', termApi);
 
 app.use(errorHandler);
 
