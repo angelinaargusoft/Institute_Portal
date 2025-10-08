@@ -15,32 +15,6 @@
     >
       {{ isEdit ? "Update Profile" : "Create Profile" }}
     </v-btn>
-    <!-- Divider -->
-    <v-divider class="my-6" />
-    <!-- Add Student / Faculty Profile Options -->
-    <v-card v-if="isEdit" outlined class="pa-4">
-      <h3 class="mb-4">Add Additional Profile Details</h3>
-      <v-row justify="center" align="center" class="mt-2">
-        <v-col cols="12" md="6" class="text-center">
-          <v-btn
-            color="secondary"
-            @click="goToStudentProfile"
-            block
-          >
-            :heavy_plus_sign: Add Student Profile
-          </v-btn>
-        </v-col>
-        <v-col cols="12" md="6" class="text-center">
-          <v-btn
-            color="success"
-            @click="goToFacultyProfile"
-            block
-          >
-            :heavy_plus_sign: Add Faculty Profile
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-card>
   </v-container>
 </template>
 <script setup>
@@ -77,6 +51,7 @@ onMounted(async () => {
   if (!user.value?.id) return;
   await store.dispatch("userProfile/fetchProfile", user.value.id);
   const existing = profileFromStore.value;
+  console.log(existing);
   if (existing) {
     localProfile.value = {
       firstName: existing.firstName || "",
@@ -95,6 +70,7 @@ onMounted(async () => {
             addressType: "current",
           },
     };
+    console.log(localProfile)
     isEdit.value = true;
   }
 });
@@ -106,24 +82,18 @@ const onSave = async () => {
     userId: user.value.id,
     address: { ...localProfile.value.address },
   };
+  console.log(localProfile)
   const ok = await store.dispatch("userProfile/saveProfile", {
     userId: user.value.id,
     profile: payload,
   });
-  if (ok) {
-    isEdit.value = true; // Enable student/faculty options
+  if(ok){
+    router.push("/home");
   }
-};
-// --- Navigation ---
-const goToStudentProfile = () => {
-  router.push("/student-profile");
-};
-const goToFacultyProfile = () => {
-  router.push("/faculty-profile");
 };
 </script>
 <style scoped>
-h3 {
+h2 {
   font-weight: 600;
 }
 </style>

@@ -32,8 +32,6 @@ async function updateSession(req, res, next) {
     try {
         const session = await sessionService.getSession(req.params.id);
         const institute = await instituteService.getInstituteById(session.instituteId);
-        console.log(institute.createdBy);
-        console.log(req.user.userId);
         if (institute.createdBy !== req.user.userId) {
             return res.status(403).json({ message: 'You are not allowed to update this session' });
         }

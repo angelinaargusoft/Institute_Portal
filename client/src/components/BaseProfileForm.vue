@@ -29,7 +29,7 @@
   </v-card>
 </template>
 <script setup>
-import { reactive, watch, onMounted } from "vue";
+import { computed } from "vue";
 const props = defineProps({
   modelValue: {
     type: Object,
@@ -50,41 +50,24 @@ const props = defineProps({
     }),
   },
 });
+
 const emit = defineEmits(["update:modelValue"]);
-// --- Reactive local copy ---
-const localProfile = reactive({
-  firstName: "",
-  lastName: "",
-  dob: "",
-  gender: "",
-  phone: "",
-  address: {
-    addressLine: "",
-    city: "",
-    state: "",
-    country: "",
-    postalCode: "",
-    addressType: "current",
-  },
-});
-// --- Initialize once on mount ---
-onMounted(() => {
-  Object.assign(localProfile, props.modelValue);
-  localProfile.address = props.modelValue.address
-    ? { ...props.modelValue.address }
-    : {
+// Computed getter/setter ensures reactivity and works even if parent updates async
+const localProfile = computed({
+  get: () => {
+    // Always ensure address object exists to prevent undefined errors
+    return {
+      ...props.modelValue,
+      address: props.modelValue.address || {
         addressLine: "",
         city: "",
         state: "",
         country: "",
         postalCode: "",
         addressType: "current",
-      };
+      },
+    };
+  },
+  set: (val) => emit("update:modelValue", val),
 });
-// --- Emit changes to parent whenever user types ---
-watch(
-  localProfile,
-  (val) => emit("update:modelValue", val),
-  { deep: true }
-);
 </script>

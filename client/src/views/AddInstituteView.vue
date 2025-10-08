@@ -4,7 +4,7 @@
       <v-alert v-if="error" type="error" dense class="mb-4">{{ error }}</v-alert>
       <v-form ref="formRef">
         <!-- Basic Details -->
-        <v-text-field v-model="institute.name" label="Institute Name" required />
+        <v-text-field v-model="institute.name" label="Institute Name" required variant="outlined" color="primary"/>
         <v-text-field v-model="institute.email" label="Official Email" required />
         <v-text-field v-model="institute.description" label="Description" multi-line />
         <v-text-field v-model="institute.logoUrl" label="Logo URL" />

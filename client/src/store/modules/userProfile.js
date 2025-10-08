@@ -22,7 +22,23 @@ import {
       commit("setLoading", true);
       try {
         const profile = await getProfileByUserId(userId);
-        commit("setProfile", profile || null);
+        if (profile) {
+          // Transform flat backend object into nested format
+          const nestedProfile = {
+            ...profile,
+            address: {
+              addressLine: profile.addressLine || "",
+              city: profile.city || "",
+              state: profile.state || "",
+              country: profile.country || "",
+              postalCode: profile.postalCode || "",
+              addressType: profile.addressType || "current",
+            }
+          };
+          commit("setProfile", nestedProfile);
+        } else {
+          commit("setProfile", null);
+        }
       } catch (err) {
         if (err.response?.status === 404) {
           commit("setProfile", null); // profile not found
