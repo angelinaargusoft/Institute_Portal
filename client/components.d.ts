@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AuthForm: typeof import('./src/components/AuthForm.vue')['default']
     BaseDetails: typeof import('./src/components/BaseDetails.vue')['default']
     BaseProfileForm: typeof import('./src/components/BaseProfileForm.vue')['default']
     DashboardSidebar: typeof import('./src/components/DashboardSidebar.vue')['default']

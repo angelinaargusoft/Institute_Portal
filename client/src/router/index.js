@@ -5,6 +5,7 @@ import store from "@/store";
 const LoginView = () => import("@/views/LoginView.vue");
 const RegisterView = () => import("@/views/RegisterView.vue");
 const HomeView = () => import("@/views/HomeView.vue");
+const AuthView = () => import("@/views/AuthView.vue");
 const StudentProfileView = () => import("@/views/StudentProfileView.vue");
 const UpdateProfileView = () => import("@/views/UpdateProfileView.vue");
 const UpdateInstituteView = () => import("@/views/UpdateInstituteView.vue");
@@ -14,13 +15,13 @@ const routes = [
   {
     path: "/login",
     name: "Login",
-    component: LoginView,
+    component: AuthView,
     meta: { layout: "auth", guest: true },
   },
   {
     path: "/register",
     name: "Register",
-    component: RegisterView,
+    component: AuthView,
     meta: { layout: "auth", guest: true },
   },
   {
