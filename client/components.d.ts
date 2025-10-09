@@ -11,6 +11,7 @@ declare module 'vue' {
     BaseDetails: typeof import('./src/components/BaseDetails.vue')['default']
     BaseProfileForm: typeof import('./src/components/BaseProfileForm.vue')['default']
     DashboardSidebar: typeof import('./src/components/DashboardSidebar.vue')['default']
+    InstituteForm: typeof import('./src/components/InstituteForm.vue')['default']
     InstituteItem: typeof import('./src/components/InstituteItem.vue')['default']
     LoginForm: typeof import('./src/components/LoginForm.vue')['default']
     RegisterForm: typeof import('./src/components/RegisterForm.vue')['default']

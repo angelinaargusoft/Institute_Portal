@@ -1,67 +1,102 @@
 <template>
-    <v-container>
-      <h2 class="mb-4">Add Institute</h2>
-      <v-alert v-if="error" type="error" dense class="mb-4">{{ error }}</v-alert>
-      <v-form ref="formRef">
-        <!-- Basic Details -->
-        <v-text-field v-model="institute.name" label="Institute Name" required variant="outlined" color="primary"/>
-        <v-text-field v-model="institute.email" label="Official Email" required />
-        <v-text-field v-model="institute.description" label="Description" multi-line />
-        <v-text-field v-model="institute.logoUrl" label="Logo URL" />
-        <!-- Address Fields (nested object) -->
-        <h4 class="mt-4 mb-2">Address</h4>
-        <v-text-field v-model="institute.address.addressLine" label="Address Line" />
-        <v-text-field v-model="institute.address.city" label="City" />
-        <v-text-field v-model="institute.address.state" label="State" />
-        <v-text-field v-model="institute.address.country" label="Country" />
-        <v-text-field v-model="institute.address.postalCode" label="Postal Code" />
-        <v-select
-          v-model="institute.status"
-          :items="['active','inactive','pending_approval']"
-          label="Status"
-        />
-        <v-btn color="primary" class="mt-4" @click="onSave" :loading="loading">
-          Save Institute
-        </v-btn>
-      </v-form>
-    </v-container>
-  </template>
-  <script setup>
-  import { reactive, ref, computed } from "vue";
-  import { useStore } from "vuex";
-  import { useRouter } from "vue-router";
-  import { createInstitute } from "@/services/instituteService";
-  const store = useStore();
-  const router = useRouter();
-  const formRef = ref(null);
-  const loading = ref(false);
-  const error = ref(null);
-  // Initialize institute object
-  const institute = reactive({
-    name: "",
-    email: "",
-    description: "",
-    logoUrl: "",
-    status: "active",
-    createdBy: store.getters["auth/user"]?.id || "",
-    address: {
-      addressLine: "",
-      city: "",
-      state: "",
-      country: "",
-      postalCode: "",
-    },
-  });
-  const onSave = async () => {
-    error.value = null;
-    loading.value = true;
-    try {
-      await store.dispatch("institute/createInstitute", institute);
-      router.push("/home");
-    } catch (err) {
-      error.value = err.message || "Failed to create institute";
-    } finally {
-      loading.value = false;
-    }
+  <v-container>
+    <!-- Title -->
+    <h2 class="mb-4">{{ isEdit ? "Edit Institute" : "Add Institute" }}</h2>
+    <!-- Error Alert -->
+    <v-alert v-if="error" type="error" dense class="mb-4">{{ error }}</v-alert>
+    <!-- Institute Form -->
+    <institute-form v-model="localInstitute" />
+    <!-- Save / Update Button -->
+    <v-btn
+      color="primary"
+      :loading="loading"
+      class="mt-4"
+      @click="onSave"
+    >
+      {{ isEdit ? "Update Institute" : "Create Institute" }}
+    </v-btn>
+  </v-container>
+</template>
+<script setup>
+import { ref, computed, onMounted } from "vue";
+import { useStore } from "vuex";
+import { useRouter, useRoute } from "vue-router";
+import InstituteForm from "@/components/InstituteForm.vue";
+const store = useStore();
+const router = useRouter();
+const route = useRoute();
+// --- Vuex State ---
+const user = computed(() => store.getters["auth/user"]);
+const currentInstitute = computed(() => store.getters["institute/currentInstitute"]);
+const loading = computed(() => store.getters["userProfile/loading"]);
+const error = computed(() => store.getters["userProfile/error"]);
+// --- Local reactive profile ---
+const localInstitute = ref({
+  name: "",
+  email: "",
+  description: "",
+  logoUrl: "",
+  status: "",
+  address: {
+    addressLine: "",
+    city: "",
+    state: "",
+    country: "",
+    postalCode: "",
+    addressType: "current",
+  },
+});
+const isEdit = ref(false);
+// --- Load existing profile ---
+onMounted(async () => {
+  const instituteId = route.params.id;
+  if(instituteId){
+    isEdit.value = true;
+    await store.dispatch("institute/fetchInstituteById", instituteId);
+    const existing = currentInstitute.value;
+  if (existing) {
+    localInstitute.value = {
+      name: existing.name || "",
+      email: existing.email || "",
+      description: existing.description || "",
+      logoUrl: existing.logoUrl || "",
+      status: existing.status || "",
+      address: existing.address
+        ? { ...existing.address }
+        : {
+            addressLine: "",
+            city: "",
+            state: "",
+            country: "",
+            postalCode: "",
+            addressType: "current",
+          },
+    };
+  }
+  }
+});
+// --- Save / Update Profile ---
+const onSave = async () => {
+  if (!user.value?.id) return;
+  const payload = {
+    ...localInstitute.value,
+    createdBy: user.value.id,
+    address: { ...localInstitute.value.address },
   };
-  </script>
+  console.log(localInstitute.value)
+  const ok = await store.dispatch("institute/saveInstitute", {
+    instituteId: isEdit.value? route.params.id : null,
+    institute: payload,
+  });
+  if(ok){
+    router.push("/home");
+  }
+};
+</script>
+<style scoped>
+h2 {
+  font-weight: 600;
+}
+</style>
+
+

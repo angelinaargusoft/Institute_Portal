@@ -62,6 +62,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/institutes/:id/edit",
+    name: "EditInstitute",
+    component: UpdateInstituteView,
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/dashboard/admin/:id",
     name: "AdminDashboard",
     component: AdminDashboardView,
