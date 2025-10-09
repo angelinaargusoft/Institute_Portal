@@ -29,7 +29,7 @@
   </v-card>
 </template>
 <script setup>
-import { computed } from "vue";
+import { reactive, watch } from "vue";
 const props = defineProps({
   modelValue: {
     type: Object,
@@ -50,24 +50,25 @@ const props = defineProps({
     }),
   },
 });
-
 const emit = defineEmits(["update:modelValue"]);
-// Computed getter/setter ensures reactivity and works even if parent updates async
-const localProfile = computed({
-  get: () => {
-    // Always ensure address object exists to prevent undefined errors
-    return {
-      ...props.modelValue,
-      address: props.modelValue.address || {
-        addressLine: "",
-        city: "",
-        state: "",
-        country: "",
-        postalCode: "",
-        addressType: "current",
-      },
-    };
+// Make a local deep clone
+const localProfile = reactive(JSON.parse(JSON.stringify(props.modelValue)));
+// Watch for external prop updates (only update if different)
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    if (JSON.stringify(newVal) !== JSON.stringify(localProfile)) {
+      Object.assign(localProfile, newVal);
+    }
   },
-  set: (val) => emit("update:modelValue", val),
-});
+  { deep: true, immediate: true }
+);
+// Emit changes to parent on local edits
+watch(
+  localProfile,
+  (newVal) => {
+    emit("update:modelValue", JSON.parse(JSON.stringify(newVal)));
+  },
+  { deep: true }
+);
 </script>

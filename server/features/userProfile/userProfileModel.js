@@ -28,6 +28,7 @@ async function createBaseProfile(data) {
 }
 
 async function updateBaseProfile(userId, data) {
+    console.log(data)
     const profile = await getByUserId(userId);
     if (!profile) throw new Error('Profile not found');
     const { firstName, lastName, dob, gender, phone, address } = data;
@@ -37,7 +38,8 @@ async function updateBaseProfile(userId, data) {
             await addressService.updateAddress(addressId, address);
         } else {
             const newAddress = await addressService.createAddress(address);
-            addressId = newAddress.id;        }
+            addressId = newAddress.id;        
+        }
     }
     const query = `
         UPDATE UserProfiles

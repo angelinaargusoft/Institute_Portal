@@ -16,13 +16,13 @@ async function getAddressById(id) {
 }
 
 async function updateAddress(id, data) {
-    const { type, addressLine, city, state, country, postalCode } = data;
+    const { addressType, addressLine, city, state, country, postalCode } = data;
     const query = `
         UPDATE Addresses
         SET type = ?, addressLine = ?, city = ?, state = ?, country = ?, postalCode = ?, updatedAt = CURRENT_TIMESTAMP
         WHERE id = ?
     `;
-    await pool.execute(query, [type, addressLine, city, state, country, postalCode, id]);
+    await pool.execute(query, [addressType, addressLine, city, state, country, postalCode, id]);
     return await getAddressById(id);
 }
 

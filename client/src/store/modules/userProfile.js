@@ -52,10 +52,16 @@ import {
     // Save or update profile
     async saveProfile({ commit }, { userId, profile }) {
       commit("setLoading", true);
+      console.log(profile)
       try {
+         // Normalize date to YYYY-MM-DD format
+    const normalizedDob = profile.dob
+    ? new Date(profile.dob).toISOString().split("T")[0]
+    : null;
         const payload = {
           ...profile,
           userId,
+          dob: normalizedDob,
           address: {
             addressLine: profile.address?.addressLine || "",
             city: profile.address?.city || "",
@@ -66,7 +72,7 @@ import {
           },
         };
         let savedProfile;
-        if (!profile.id) {
+        if (!profile.userId) {
           // Create new profile
           savedProfile = await createProfile(payload);
         } else {

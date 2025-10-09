@@ -51,7 +51,6 @@ onMounted(async () => {
   if (!user.value?.id) return;
   await store.dispatch("userProfile/fetchProfile", user.value.id);
   const existing = profileFromStore.value;
-  console.log(existing);
   if (existing) {
     localProfile.value = {
       firstName: existing.firstName || "",
@@ -70,7 +69,6 @@ onMounted(async () => {
             addressType: "current",
           },
     };
-    console.log(localProfile)
     isEdit.value = true;
   }
 });
@@ -82,7 +80,7 @@ const onSave = async () => {
     userId: user.value.id,
     address: { ...localProfile.value.address },
   };
-  console.log(localProfile)
+  console.log(localProfile.value)
   const ok = await store.dispatch("userProfile/saveProfile", {
     userId: user.value.id,
     profile: payload,

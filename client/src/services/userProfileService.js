@@ -11,7 +11,9 @@ export const createProfile = async (data) => {
 };
 // Update base profile
 export const updateBaseProfile = async (userId, data) => {
+  console.log(data)
   const res = await api.put(`/userProfiles/${userId}/base`, data);
+  console.log(res.data);
   return res.data;
 };
 // Update student profile (optional, if you have role-specific fields)

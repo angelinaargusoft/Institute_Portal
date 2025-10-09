@@ -7,7 +7,7 @@ const RegisterView = () => import("@/views/RegisterView.vue");
 const HomeView = () => import("@/views/HomeView.vue");
 const StudentProfileView = () => import("@/views/StudentProfileView.vue");
 const UpdateProfileView = () => import("@/views/UpdateProfileView.vue");
-const AddInstituteView = () => import("@/views/AddInstituteView.vue");
+const UpdateInstituteView = () => import("@/views/UpdateInstituteView.vue");
 const AdminDashboardView = () => import("@/views/AdminDashboardView.vue");
 const FacultyProfileView = () => import("@/views/FacultyProfileView.vue")
 const routes = [
@@ -57,8 +57,8 @@ const routes = [
   },
   {
     path: "/institutes/add",
-    name: "AddInstitute",
-    component: AddInstituteView,
+    name: "UpdateInstitute",
+    component: UpdateInstituteView,
     meta: { requiresAuth: true },
   },
   {
