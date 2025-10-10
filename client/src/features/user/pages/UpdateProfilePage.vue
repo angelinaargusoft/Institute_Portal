@@ -1,11 +1,11 @@
 <template>
   <v-container>
     <!-- Title -->
-    <h2 class="mb-4">{{ isEdit ? "Edit Institute" : "Add Institute" }}</h2>
+    <h2 class="mb-4">{{ isEdit ? "Edit Profile" : "Add Profile" }}</h2>
     <!-- Error Alert -->
     <v-alert v-if="error" type="error" dense class="mb-4">{{ error }}</v-alert>
-    <!-- Institute Form -->
-    <institute-form v-model="localInstitute" />
+    <!-- Base Profile Form -->
+    <base-profile-form v-model="localProfile" />
     <!-- Save / Update Button -->
     <v-btn
       color="primary"
@@ -13,30 +13,29 @@
       class="mt-4"
       @click="onSave"
     >
-      {{ isEdit ? "Update Institute" : "Create Institute" }}
+      {{ isEdit ? "Update Profile" : "Create Profile" }}
     </v-btn>
   </v-container>
 </template>
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
-import { useRouter, useRoute } from "vue-router";
-import InstituteForm from "@/components/InstituteForm.vue";
+import { useRouter } from "vue-router";
+import BaseProfileForm from "@/features/user/components/BaseProfileForm.vue";
 const store = useStore();
 const router = useRouter();
-const route = useRoute();
 // --- Vuex State ---
 const user = computed(() => store.getters["auth/user"]);
-const currentInstitute = computed(() => store.getters["institute/currentInstitute"]);
+const profileFromStore = computed(() => store.getters["userProfile/profile"]);
 const loading = computed(() => store.getters["userProfile/loading"]);
 const error = computed(() => store.getters["userProfile/error"]);
 // --- Local reactive profile ---
-const localInstitute = ref({
-  name: "",
-  email: "",
-  description: "",
-  logoUrl: "",
-  status: "",
+const localProfile = ref({
+  firstName: "",
+  lastName: "",
+  dob: "",
+  gender: "",
+  phone: "",
   address: {
     addressLine: "",
     city: "",
@@ -49,18 +48,16 @@ const localInstitute = ref({
 const isEdit = ref(false);
 // --- Load existing profile ---
 onMounted(async () => {
-  const instituteId = route.params.id;
-  if(instituteId){
-    isEdit.value = true;
-    await store.dispatch("institute/fetchInstituteById", instituteId);
-    const existing = currentInstitute.value;
+  if (!user.value?.id) return;
+  await store.dispatch("userProfile/fetchProfile", user.value.id);
+  const existing = profileFromStore.value;
   if (existing) {
-    localInstitute.value = {
-      name: existing.name || "",
-      email: existing.email || "",
-      description: existing.description || "",
-      logoUrl: existing.logoUrl || "",
-      status: existing.status || "",
+    localProfile.value = {
+      firstName: existing.firstName || "",
+      lastName: existing.lastName || "",
+      dob: existing.dob || "",
+      gender: existing.gender || "",
+      phone: existing.phone || "",
       address: existing.address
         ? { ...existing.address }
         : {
@@ -72,21 +69,21 @@ onMounted(async () => {
             addressType: "current",
           },
     };
-  }
+    isEdit.value = true;
   }
 });
 // --- Save / Update Profile ---
 const onSave = async () => {
   if (!user.value?.id) return;
   const payload = {
-    ...localInstitute.value,
-    createdBy: user.value.id,
-    address: { ...localInstitute.value.address },
+    ...localProfile.value,
+    userId: user.value.id,
+    address: { ...localProfile.value.address },
   };
-  console.log(localInstitute.value)
-  const ok = await store.dispatch("institute/saveInstitute", {
-    instituteId: isEdit.value? route.params.id : null,
-    institute: payload,
+  console.log(localProfile.value)
+  const ok = await store.dispatch("userProfile/saveProfile", {
+    userId: user.value.id,
+    profile: payload,
   });
   if(ok){
     router.push("/home");
@@ -98,5 +95,3 @@ h2 {
   font-weight: 600;
 }
 </style>
-
-

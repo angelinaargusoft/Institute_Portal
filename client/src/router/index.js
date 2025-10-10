@@ -1,97 +1,97 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from "@/store";
-
-// Views (lazy-load recommended)
-const LoginView = () => import("@/views/LoginView.vue");
-const RegisterView = () => import("@/views/RegisterView.vue");
-const HomeView = () => import("@/views/HomeView.vue");
-const AuthView = () => import("@/views/AuthView.vue");
-const StudentProfileView = () => import("@/views/StudentProfileView.vue");
-const UpdateProfileView = () => import("@/views/UpdateProfileView.vue");
-const UpdateInstituteView = () => import("@/views/UpdateInstituteView.vue");
-const AdminDashboardView = () => import("@/views/AdminDashboardView.vue");
-const FacultyProfileView = () => import("@/views/FacultyProfileView.vue")
+// Pages (lazy-load recommended)
+const HomePage = () => import("@/features/home/pages/HomePage.vue");
+const AuthPage = () => import("@/features/auth/pages/AuthPage.vue");
+const StudentProfilePage = () => import("@/features/user/pages/StudentProfilePage.vue");
+const FacultyProfilePage = () => import("@/features/user/pages/FacultyProfilePage.vue");
+const UpdateProfilePage = () => import("@/features/user/pages/UpdateProfilePage.vue");
+const UpdateInstitutePage = () => import("@/features/institute/pages/UpdateInstitutePage.vue");
+const AdminDashboardPage = () => import("@/features/dashboards/admin/pages/AdminDashboardPage.vue");
 const routes = [
+  // ----------------------------
+  // Auth routes
+  // ----------------------------
   {
-    path: "/login",
-    name: "Login",
-    component: AuthView,
+    path: "/auth",
+    name: "Auth",
+    component: AuthPage,
     meta: { layout: "auth", guest: true },
   },
-  {
-    path: "/register",
-    name: "Register",
-    component: AuthView,
-    meta: { layout: "auth", guest: true },
-  },
+  // ----------------------------
+  // Main routes (no sidebar)
+  // ----------------------------
   {
     path: "/home",
     name: "Home",
-    component: HomeView,
+    component: HomePage,
     meta: { layout: "main", requiresAuth: true },
   },
   {
     path: "/profile/student",
     name: "StudentProfile",
-    component: StudentProfileView,
-    meta: { layout: "main", requiresAuth: true }
+    component: StudentProfilePage,
+    meta: { layout: "main", requiresAuth: true },
   },
   {
     path: "/profile/faculty",
     name: "FacultyProfile",
-    component: FacultyProfileView,
+    component: FacultyProfilePage,
     props: true,
-    meta: { requiresAuth: true },
+    meta: { layout: "main", requiresAuth: true },
   },
   {
     path: "/user-profile/:userId/edit",
     name: "EditProfile",
-    component: UpdateProfileView,
+    component: UpdateProfilePage,
     props: true,
-    meta: { requiresAuth: true },
+    meta: { layout: "main", requiresAuth: true },
   },
   {
     path: "/update-profile",
     name: "UpdateProfile",
-    component: UpdateProfileView,
+    component: UpdateProfilePage,
     meta: { layout: "main", requiresAuth: true },
   },
   {
     path: "/institutes/add",
-    name: "UpdateInstitute",
-    component: UpdateInstituteView,
-    meta: { requiresAuth: true },
+    name: "AddInstitute",
+    component: UpdateInstitutePage,
+    meta: { layout: "main", requiresAuth: true },
   },
   {
     path: "/institutes/:id/edit",
     name: "EditInstitute",
-    component: UpdateInstituteView,
-    meta: { requiresAuth: true },
+    component: UpdateInstitutePage,
+    props: true,
+    meta: { layout: "main", requiresAuth: true },
   },
+  // ----------------------------
+  // Dashboard routes (with sidebar)
+  // ----------------------------
   {
-    path: "/dashboard/admin/:id",
+    path: "/dashboard/admin/:id?",
     name: "AdminDashboard",
-    component: AdminDashboardView,
-    meta: { requiresAuth: true },
+    component: AdminDashboardPage,
+    meta: { layout: "dashboard", requiresAuth: true },
   },
-  { path: "/", redirect: "/home" }, // default
+  // Default redirect
+  { path: "/", redirect: "/home" },
 ];
-
 const router = createRouter({
   history: createWebHistory(),
   routes,
 });
-
-
+// ----------------------------
+// Global auth guard
+// ----------------------------
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const isAuthenticated = store.getters["auth/isAuthenticated"];
   if (requiresAuth && !isAuthenticated) {
-    // Redirect to login and preserve original target route
-    next({ name: "Login", query: { redirect: to.fullPath } });
+    next({ name: "Auth", query: { redirect: to.fullPath } });
   } else {
     next();
   }
 });
-
 export default router;

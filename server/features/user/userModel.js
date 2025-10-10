@@ -11,7 +11,7 @@ async function createUser(data) {
     const query = `INSERT INTO Users (id, email, password) VALUES (?, ?, ?)`;
     await pool.execute(query, [id, email, password]);
     
-    return { id, email, roles: ["student"] };
+    return { id, email };
 }
 
 async function getUserById(id) {

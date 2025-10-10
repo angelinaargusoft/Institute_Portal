@@ -1,5 +1,5 @@
-import { register, login } from "@/services/authService";
-import { getUserById } from "@/services/userService"; // put this in a separate service
+import { register, login } from "@/features/auth/api/authService";
+import { getUserById } from "@/features/auth/api/userService"; // put this in a separate service
 const state = () => ({
   user: null,
   accessToken: localStorage.getItem("accessToken") || null,

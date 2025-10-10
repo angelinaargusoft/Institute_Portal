@@ -21,8 +21,8 @@
 <script setup>
 import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
-import BaseDetails from "@/components/BaseDetails.vue";
-import InstituteItem from "@/components/InstituteItem.vue";
+import BaseDetails from "@/features/user/components/BaseDetails.vue";
+import InstituteItem from "@/features/institute/components/InstituteItem.vue";
 const store = useStore();
 // Get user institutes from Vuex
 const institutes = computed(() => store.getters["institute/institutes"]);

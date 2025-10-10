@@ -2,7 +2,7 @@ import {
     getProfileByUserId,
     createProfile,
     updateBaseProfile,
-  } from "@/services/userProfileService";
+  } from "@/features/user/api/userProfileService";
 
   const state = () => ({
     profile: null,

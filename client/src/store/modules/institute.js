@@ -5,7 +5,7 @@ import {
   updateInstitute,
   deleteInstitute,
   getInstitutesByUser,
-} from "@/services/instituteService";
+} from "@/features/institute/api/instituteService";
 const state = () => ({
   institutes: [],
   currentInstitute: null,

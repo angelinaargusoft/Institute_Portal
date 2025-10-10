@@ -70,6 +70,7 @@ async function updateStudentProfile(userId, studentData) {
         previousSchool || null,
         userId
     ]);
+    await userService.addRole(userId, 'student')
     return getByUserId(userId);
 }
 
@@ -104,6 +105,8 @@ async function remove(userId) {
     if (!profile) return;
     await pool.execute(`DELETE FROM UserProfiles WHERE userId = ?`, [userId]);
     if (profile.addressId) await addressService.deleteAddress(profile.addressId);
+    await userService.removeRole(userId, 'student');
+    await userService.removeRole(userId, 'faculty');
 }
 
 module.exports = {
