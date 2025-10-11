@@ -2,6 +2,8 @@ import {
     getProfileByUserId,
     createProfile,
     updateBaseProfile,
+    updateFacultyProfile,
+    updateStudentProfile
   } from "@/features/user/api/userProfileService";
 
   const state = () => ({
@@ -87,8 +89,55 @@ import {
       } finally {
         commit("setLoading", false);
       }
-    }          
+    },      
+    async saveFacultyProfile({ commit }, { userId, profile }) {
+      commit("setLoading", true);
+      try {
+        // :sparkles: Normalize and prepare data
+        const payload = {
+          userId,
+          facultyProfilePic: profile.facultyProfilePic || "",
+          designation: profile.designation || "",
+          specialization: profile.specialization || "",
+          qualifications: profile.qualifications || "",
+          yearsOfExperience: profile.yearsOfExperience || 0,
+        };
+
+        const updatedProfile = await updateFacultyProfile(userId, payload);
+        commit("setProfile", updatedProfile);
+        return true;
+      } catch (err) {
+        commit("setError", err.message);
+        return false;
+      } finally {
+        commit("setLoading", false);
+      }
+    },   
+    async saveStudentProfile({ commit }, { userId, profile }) {
+      commit("setLoading", true);
+      try {
+        // :sparkles: Normalize and prepare data
+        const payload = {
+          userId,
+          studentProfilePic: profile.studentProfilePic || "",
+          guardianName: profile.guardianName || "",
+          guardianPhone: profile.guardianPhone || "",
+          bloodGroup: profile.bloodGroup || "",
+          previousSchool: profile.previousSchool || "",
+        };
+
+        const updatedProfile = await updateStudentProfile(userId, payload);
+        commit("setProfile", updatedProfile);
+        return true;
+      } catch (err) {
+        commit("setError", err.message);
+        return false;
+      } finally {
+        commit("setLoading", false);
+      }
+    },        
   };
+  
   const mutations = {
     setProfile(state, profile) {
       state.profile = profile;

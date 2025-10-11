@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from "@/store";
+import { components } from "vuetify/dist/vuetify.js";
 // Pages (lazy-load recommended)
 const HomePage = () => import("@/features/home/pages/HomePage.vue");
 const AuthPage = () => import("@/features/auth/pages/AuthPage.vue");
@@ -8,6 +9,8 @@ const FacultyProfilePage = () => import("@/features/user/pages/FacultyProfilePag
 const UpdateProfilePage = () => import("@/features/user/pages/UpdateProfilePage.vue");
 const UpdateInstitutePage = () => import("@/features/institute/pages/UpdateInstitutePage.vue");
 const AdminDashboardPage = () => import("@/features/dashboards/admin/pages/AdminDashboardPage.vue");
+const UpdateFacultyProfilePage = () => import("@/features/user/pages/UpdateFacultyProfilePage.vue");
+const UpdateStudentProfilePage = () => import("@/features/user/pages/UpdateStudentProfilePage.vue");
 const routes = [
   // ----------------------------
   // Auth routes
@@ -48,10 +51,30 @@ const routes = [
     meta: { layout: "main", requiresAuth: true },
   },
   {
+    path: "/faculty-profile/:userId/edit",
+    name: "EditFacultyProfile",
+    component: UpdateFacultyProfilePage,
+    props: true,
+    meta: { layout: "main", requiresAuth: true },
+  },
+  {
+    path: "/student-profile/:userId/edit",
+    name: "EditStudentProfile",
+    component: UpdateStudentProfilePage,
+    props: true,
+    meta: { layout: "main", requiresAuth: true },
+  },
+  {
     path: "/update-profile",
     name: "UpdateProfile",
     component: UpdateProfilePage,
     meta: { layout: "main", requiresAuth: true },
+  },
+  {
+    path: "/update-faculty-profile",
+    name: "UpdateFacultyProfile",
+    component: UpdateFacultyProfilePage,
+    meta: {layout: "main", requiresAuth: true},
   },
   {
     path: "/institutes/add",
