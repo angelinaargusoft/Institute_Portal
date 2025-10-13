@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from "@/store";
 import { components } from "vuetify/dist/vuetify.js";
+
 // Pages (lazy-load recommended)
 const HomePage = () => import("@/features/home/pages/HomePage.vue");
 const AuthPage = () => import("@/features/auth/pages/AuthPage.vue");
@@ -11,6 +12,8 @@ const UpdateInstitutePage = () => import("@/features/institute/pages/UpdateInsti
 const AdminDashboardPage = () => import("@/features/dashboards/admin/pages/AdminDashboardPage.vue");
 const UpdateFacultyProfilePage = () => import("@/features/user/pages/UpdateFacultyProfilePage.vue");
 const UpdateStudentProfilePage = () => import("@/features/user/pages/UpdateStudentProfilePage.vue");
+const StudentsPage = () => import("@/features/dashboards/admin/pages/StudentsPage.vue");
+const FaculiesPage = () => import("@/features/dashboards/admin/pages/FacultiesPage.vue");
 const routes = [
   // ----------------------------
   // Auth routes
@@ -96,6 +99,18 @@ const routes = [
     path: "/dashboard/admin/:id?",
     name: "AdminDashboard",
     component: AdminDashboardPage,
+    meta: { layout: "dashboard", requiresAuth: true },
+  },
+  {
+    path: "/dashboard/admin/:id?/students",
+    name: "AllStudents",
+    component: StudentsPage,
+    meta: { layout: "dashboard", requiresAuth: true },
+  },
+  {
+    path: "/dashboard/admin/:id?/faculties",
+    name: "AllFaculties",
+    component: FaculiesPage,
     meta: { layout: "dashboard", requiresAuth: true },
   },
   // Default redirect

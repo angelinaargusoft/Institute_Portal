@@ -25,5 +25,9 @@ const layoutComponent = computed(() => {
 });
 </script>
 <style>
-/* Optional global styles */
+body{
+  background-color: #E8F5E9;
+  color: #1B1B1B;
+  font-family: "Inter", "Roboto", sans-serif;
+}
 </style>
