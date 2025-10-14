@@ -60,26 +60,16 @@
         />
       </v-card>
       <!-- Enroll Student Dialog -->
-      <v-dialog v-model="openEnrollDialog" max-width="500">
-        <v-card>
-          <v-card-title class="text-h6 font-weight-bold">
-            Enroll New Student
-          </v-card-title>
-          <v-card-text>
-            <p>Enrollment form will go here (you can add it later).</p>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn text @click="openEnrollDialog = false">Cancel</v-btn>
-            <v-btn color="primary" @click="confirmEnrollment">Save</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      <EnrollStudentDialog
+  v-model="openEnrollDialog"
+  @enroll="handleEnrollment"
+/>
     </v-container>
   </template>
   <script setup>
   import { ref, computed } from "vue";
   import StudentRow from "../components/StudentRow.vue";
+  import EnrollStudentDialog from "../components/EnrollStudentDialog.vue";
   // Dummy students
   const students = ref([
     { id: 1, name: "Rohit Sharma", roll: "101", class: "10", section: "A", email: "rohit@example.com", photo: "" },
@@ -110,6 +100,9 @@
   function confirmEnrollment() {
     alert("Enrollment saved (mock action)");
     openEnrollDialog.value = false;
+  }
+  function handleEnrollment(data){
+    console.log("Enrolled student:", data);
   }
   // View handler
   function handleView(student) {

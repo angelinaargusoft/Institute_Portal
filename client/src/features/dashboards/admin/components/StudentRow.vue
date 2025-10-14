@@ -1,15 +1,16 @@
 <template>
     <v-row class="align-center py-2 px-3 student-row" dense>
-      <v-col cols="2" class="d-flex align-center">
+      <v-col cols="1" class="d-flex align-center">
         <v-avatar size="36">
-          <v-img :src="student.photo || 'https://via.placeholder.com/36'" />
+          <v-img :src="student.photo || 'https://picsum.photos/id/237/200/300'" />
         </v-avatar>
       </v-col>
       <v-col cols="2">{{ student.name }}</v-col>
-      <v-col cols="2">{{ student.rollNo }}</v-col>
-      <v-col cols="2">{{ student.className }}</v-col>
+      <v-col cols="2">{{ student.roll }}</v-col>
+      <v-col cols="2">{{ student.class }}</v-col>
       <v-col cols="2">{{ student.section }}</v-col>
-      <v-col cols="2" class="text-right">
+      <v-col cols="2">{{ student.email }}</v-col>
+      <v-col cols="1" class="text-right">
         <v-btn color="primary" small @click="$emit('view', student)">
           View
         </v-btn>
