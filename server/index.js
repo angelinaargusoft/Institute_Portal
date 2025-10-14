@@ -10,6 +10,7 @@ const academicSessionApi = require('./features/academicSession/academicSessionAp
 const termApi = require('./features/term/termApi');
 const classApi = require('./features/class/classApi');
 const sectionApi = require('./features/section/sectionApi');
+const studentEnrollmentApi = require('./features/studentEnrollment/studentEnrollmentApi');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/sessions', academicSessionApi);
 app.use('/api/terms', termApi);
 app.use('/api/classes', classApi);
 app.use('/api/sections', sectionApi);
+app.use('/api/student-enrollments', studentEnrollmentApi);
 
 app.use(errorHandler);
 

@@ -2,9 +2,18 @@ const pool = require('../../config/database');
 const addressService = require('../address/addressService'); 
 const userService = require('../user/userService');
 
+function normalizeGender(gender){
+    if(!gender) return null;
+    const g = gender.toLowerCase();
+    if(g === 'male' || g==='m') return 'm';
+    if(g === 'female' || g==='f') return 'f';
+    if(g === 'others' || g==='o') return 'o';
+    return null;
+}
+
 async function getByUserId(userId) {
     const query = `
-        SELECT up.*, a.addressLine, a.city, a.state, a.country, a.postalCode, a.type as addressType
+        SELECT up.*, a.addressLine, a.city, a.state, a.country, a.postalCode
         FROM UserProfiles up
         LEFT JOIN Addresses a ON up.addressId = a.id
         WHERE up.userId = ?
@@ -15,23 +24,27 @@ async function getByUserId(userId) {
 
 async function createBaseProfile(data) {
     const { userId, firstName, lastName, dob, gender, phone, address } = data;
+    const normalizedGender = normalizeGender(gender);
+
     let addressId = null;
     if (address) {
         const newAddress = await addressService.createAddress(address);
-        addressId = newAddress.id;     }
+        addressId = newAddress.id;    
+        console.log(addressId) 
+    }
     const query = `
         INSERT INTO UserProfiles (userId, firstName, lastName, dob, gender, phone, addressId)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
-    await pool.execute(query, [userId, firstName, lastName, dob, gender, phone, addressId]);
+    await pool.execute(query, [userId, firstName, lastName, dob, normalizedGender, phone, addressId]);
     return getByUserId(userId);
 }
 
 async function updateBaseProfile(userId, data) {
-    console.log(data)
     const profile = await getByUserId(userId);
     if (!profile) throw new Error('Profile not found');
     const { firstName, lastName, dob, gender, phone, address } = data;
+    const normalizedGender = normalizeGender(gender);
     let addressId = profile.addressId;
     if (address) {
         if (addressId) {
@@ -46,7 +59,7 @@ async function updateBaseProfile(userId, data) {
         SET firstName = ?, lastName = ?, dob = ?, gender = ?, phone = ?, addressId = ?, updatedAt = CURRENT_TIMESTAMP
         WHERE userId = ?
     `;
-    await pool.execute(query, [firstName, lastName, dob, gender, phone, addressId, userId]);
+    await pool.execute(query, [firstName, lastName, dob, normalizedGender, phone, addressId, userId]);
     return getByUserId(userId);
 }
 

@@ -1,32 +1,29 @@
 import {
-    getProfileByUserId,
-    createProfile,
-    updateBaseProfile,
-    updateFacultyProfile,
-    updateStudentProfile
-  } from "@/features/user/api/userProfileService";
-
-  const state = () => ({
-    profile: null,
-    loading: false,
-    error: null,
-  });
-
-  const getters = {
-    profile: (state) => state.profile,
-    loading: (state) => state.loading,
-    error: (state) => state.error,
-  };
-  
-  const actions = {
-    // Fetch profile from backend
-    async fetchProfile({ commit }, userId) {
-      commit("setLoading", true);
-      try {
-        const profile = await getProfileByUserId(userId);
-        if (profile) {
-          // Transform flat backend object into nested format
-          const nestedProfile = {
+  getProfileByUserId,
+  createProfile,
+  updateBaseProfile,
+  updateFacultyProfile,
+  updateStudentProfile,
+} from "@/features/user/api/userProfileService";
+const state = () => ({
+  profile: null,
+  loading: false,
+  error: null,
+});
+const getters = {
+  profile: (state) => state.profile,
+  loading: (state) => state.loading,
+  error: (state) => state.error,
+};
+const actions = {
+  // :white_check_mark: Fetch user profile
+  async fetchProfile({ commit }, userId) {
+    commit("setLoading", true);
+    commit("setError", null);
+    try {
+      const profile = await getProfileByUserId(userId);
+      const nestedProfile = profile
+        ? {
             ...profile,
             address: {
               addressLine: profile.addressLine || "",
@@ -34,125 +31,94 @@ import {
               state: profile.state || "",
               country: profile.country || "",
               postalCode: profile.postalCode || "",
-              addressType: profile.addressType || "current",
-            }
-          };
-          commit("setProfile", nestedProfile);
-        } else {
-          commit("setProfile", null);
-        }
-      } catch (err) {
-        if (err.response?.status === 404) {
-          commit("setProfile", null); // profile not found
-        } else {
-          commit("setError", err.message);
-        }
-      } finally {
-        commit("setLoading", false);
-      }
-    },
-    // Save or update profile
-    async saveProfile({ commit }, { userId, profile }) {
-      commit("setLoading", true);
-      console.log(profile)
-      try {
-         // Normalize date to YYYY-MM-DD format
-    const normalizedDob = profile.dob
-    ? new Date(profile.dob).toISOString().split("T")[0]
-    : null;
-        const payload = {
-          ...profile,
-          userId,
-          dob: normalizedDob,
-          address: {
-            addressLine: profile.address?.addressLine || "",
-            city: profile.address?.city || "",
-            state: profile.address?.state || "",
-            country: profile.address?.country || "",
-            postalCode: profile.address?.postalCode || "",
-            addressType: profile.address?.addressType || "current",
-          },
-        };
-        let savedProfile;
-        if (!profile.userId) {
-          // Create new profile
-          savedProfile = await createProfile(payload);
-        } else {
-          // Update existing profile
-          savedProfile = await updateBaseProfile(userId, payload);
-        }
-        commit("setProfile", savedProfile);
-        return true;
-      } catch (err) {
-        commit("setError", err.message);
-        return false;
-      } finally {
-        commit("setLoading", false);
-      }
-    },      
-    async saveFacultyProfile({ commit }, { userId, profile }) {
-      commit("setLoading", true);
-      try {
-        // :sparkles: Normalize and prepare data
-        const payload = {
-          userId,
-          facultyProfilePic: profile.facultyProfilePic || "",
-          designation: profile.designation || "",
-          specialization: profile.specialization || "",
-          qualifications: profile.qualifications || "",
-          yearsOfExperience: profile.yearsOfExperience || 0,
-        };
-
-        const updatedProfile = await updateFacultyProfile(userId, payload);
-        commit("setProfile", updatedProfile);
-        return true;
-      } catch (err) {
-        commit("setError", err.message);
-        return false;
-      } finally {
-        commit("setLoading", false);
-      }
-    },   
-    async saveStudentProfile({ commit }, { userId, profile }) {
-      commit("setLoading", true);
-      try {
-        // :sparkles: Normalize and prepare data
-        const payload = {
-          userId,
-          studentProfilePic: profile.studentProfilePic || "",
-          guardianName: profile.guardianName || "",
-          guardianPhone: profile.guardianPhone || "",
-          bloodGroup: profile.bloodGroup || "",
-          previousSchool: profile.previousSchool || "",
-        };
-
-        const updatedProfile = await updateStudentProfile(userId, payload);
-        commit("setProfile", updatedProfile);
-        return true;
-      } catch (err) {
-        commit("setError", err.message);
-        return false;
-      } finally {
-        commit("setLoading", false);
-      }
-    },        
-  };
-  
-  const mutations = {
-    setProfile(state, profile) {
-      state.profile = profile;
-    },
-    setLoading(state, val) {
-      state.loading = val;
-    },
-    setError(state, err) {
-      state.error = err;
-    },
-  };
-  export default {
-    namespaced: true,
-    state,
-    getters,
-    actions,
-    mutations,
-  };
+            },
+          }
+        : null;
+      commit("setProfile", nestedProfile);
+    } catch (err) {
+      if (err.response?.status === 404) commit("setProfile", null);
+      else commit("setError", err.message);
+    } finally {
+      commit("setLoading", false);
+    }
+  },
+  // :white_check_mark: Create or update base profile
+  async saveProfile({ commit, state }, { userId, profile }) {
+    commit("setLoading", true);
+    commit("setError", null);
+    try {
+      const normalizedDob = profile.dob
+        ? new Date(profile.dob).toISOString().split("T")[0]
+        : null;
+      const payload = {
+        ...profile,
+        userId,
+        dob: normalizedDob,
+        address: {
+          addressLine: profile.address?.addressLine || "",
+          city: profile.address?.city || "",
+          state: profile.address?.state || "",
+          country: profile.address?.country || "",
+          postalCode: profile.address?.postalCode || "",
+        },
+      };
+      const savedProfile = state.profile
+        ? await updateBaseProfile(userId, payload)
+        : await createProfile(payload);
+      commit("setProfile", savedProfile);
+      return savedProfile;
+    } catch (err) {
+      commit("setError", err.message);
+      return null;
+    } finally {
+      commit("setLoading", false);
+    }
+  },
+  // :white_check_mark: Save faculty-specific details
+  async saveFacultyProfile({ commit }, { userId, profile }) {
+    return await handleRoleProfile(commit, updateFacultyProfile, userId, {
+      facultyProfilePic: profile.facultyProfilePic || "",
+      designation: profile.designation || "",
+      specialization: profile.specialization || "",
+      qualifications: profile.qualifications || "",
+      yearsOfExperience: profile.yearsOfExperience || 0,
+    });
+  },
+  // :white_check_mark: Save student-specific details
+  async saveStudentProfile({ commit }, { userId, profile }) {
+    return await handleRoleProfile(commit, updateStudentProfile, userId, {
+      studentProfilePic: profile.studentProfilePic || "",
+      guardianName: profile.guardianName || "",
+      guardianPhone: profile.guardianPhone || "",
+      bloodGroup: profile.bloodGroup || "",
+      previousSchool: profile.previousSchool || "",
+    });
+  },
+};
+// :small_blue_diamond: Helper to handle faculty/student save (DRY)
+async function handleRoleProfile(commit, updateFn, userId, payload) {
+  commit("setLoading", true);
+  commit("setError", null);
+  try {
+    const updated = await updateFn(userId, { userId, ...payload });
+    commit("setProfile", updated);
+    return updated;
+  } catch (err) {
+    commit("setError", err.message);
+    return null;
+  } finally {
+    commit("setLoading", false);
+  }
+}
+const mutations = {
+  setProfile: (state, profile) => (state.profile = profile),
+  setLoading: (state, val) => (state.loading = val),
+  setError: (state, err) => (state.error = err),
+};
+export default {
+  namespaced: true,
+  state,
+  getters,
+  actions,
+  mutations,
+};

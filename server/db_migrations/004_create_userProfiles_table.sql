@@ -1,9 +1,9 @@
-CREATE TABLE UserProfiles (
+CREATE TABLE IF NOT EXISTS UserProfiles (
     userId CHAR(36) PRIMARY KEY, -- one-to-one with Users
     firstName VARCHAR(50) NOT NULL,
     lastName VARCHAR(50),
     dob DATE NOT NULL,
-    gender ENUM('male','female','other') NOT NULL,
+    gender ENUM('m','f','o') NOT NULL,
     phone VARCHAR(20) NOT NULL,
     addressId CHAR(36),
 

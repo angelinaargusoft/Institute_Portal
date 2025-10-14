@@ -1,12 +1,13 @@
 const pool = require('../../config/database');
 
 async function createAddress(data) {
-    const { id, type, addressLine, city, state, country, postalCode } = data;
+    console.log(data)
+    const { id, addressLine, city, state, country, postalCode } = data;
     const query = `
-        INSERT INTO Addresses (id, type, addressLine, city, state, country, postalCode)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO Addresses (id, addressLine, city, state, country, postalCode)
+        VALUES (?, ?, ?, ?, ?, ?)
     `;
-    await pool.execute(query, [id, type, addressLine, city, state, country, postalCode]);
+    await pool.execute(query, [id, addressLine, city, state, country, postalCode]);
     return data;
 }
 
@@ -16,13 +17,13 @@ async function getAddressById(id) {
 }
 
 async function updateAddress(id, data) {
-    const { addressType, addressLine, city, state, country, postalCode } = data;
+    const { addressLine, city, state, country, postalCode } = data;
     const query = `
         UPDATE Addresses
-        SET type = ?, addressLine = ?, city = ?, state = ?, country = ?, postalCode = ?, updatedAt = CURRENT_TIMESTAMP
+        SET addressLine = ?, city = ?, state = ?, country = ?, postalCode = ?, updatedAt = CURRENT_TIMESTAMP
         WHERE id = ?
     `;
-    await pool.execute(query, [addressType, addressLine, city, state, country, postalCode, id]);
+    await pool.execute(query, [ addressLine, city, state, country, postalCode, id]);
     return await getAddressById(id);
 }
 

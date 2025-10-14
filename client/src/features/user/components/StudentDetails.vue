@@ -28,9 +28,6 @@
               </v-row>
               <v-row>
                 <v-col cols="12" sm="6">
-                  <strong>Qualifications:</strong> {{ profile.qualifications || '-' }}
-                </v-col>
-                <v-col cols="12" sm="6">
                   <strong>Blood Group:</strong> {{ profile.bloodGroup || '-' }} years
                 </v-col>
               </v-row>

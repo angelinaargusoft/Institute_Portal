@@ -4,7 +4,6 @@ const { v4: uuidv4 } = require('uuid');
 async function createAddress(data) {
     const addressData = {
         id: uuidv4(),
-        type: data.type || 'current',
         addressLine: data.addressLine,
         city: data.city,
         state: data.state,

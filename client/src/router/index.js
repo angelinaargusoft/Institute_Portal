@@ -80,6 +80,12 @@ const routes = [
     meta: {layout: "main", requiresAuth: true},
   },
   {
+    path: "/update-student-profile",
+    name: "UpdateStudentProfile",
+    component: UpdateStudentProfilePage,
+    meta: {layout: "main", requiresAuth: true},
+  },
+  {
     path: "/institutes/add",
     name: "AddInstitute",
     component: UpdateInstitutePage,

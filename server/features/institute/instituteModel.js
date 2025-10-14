@@ -18,7 +18,7 @@ async function createInstitute(data) {
 
 async function getAllInstitutes() {
     const query = `
-        SELECT i.*, a.addressLine, a.city, a.state, a.country, a.postalCode, a.type as addressType
+        SELECT i.*, a.addressLine, a.city, a.state, a.country, a.postalCode
         FROM Institutes i
         LEFT JOIN Addresses a ON i.addressId = a.id
     `;
@@ -29,7 +29,7 @@ async function getAllInstitutes() {
 async function getInstituteById(id) {
     console.log(id)
     const query = `
-        SELECT i.*, a.addressLine, a.city, a.state, a.country, a.postalCode, a.type as addressType
+        SELECT i.*, a.addressLine, a.city, a.state, a.country, a.postalCode
         FROM Institutes i
         LEFT JOIN Addresses a ON i.addressId = a.id
         WHERE i.id = ?
@@ -40,7 +40,7 @@ async function getInstituteById(id) {
 
 async function getInstitutesByUserId(userId) {
     const query = `
-        SELECT i.*, a.addressLine, a.city, a.state, a.country, a.postalCode, a.type as addressType
+        SELECT i.*, a.addressLine, a.city, a.state, a.country, a.postalCode
         FROM Institutes i
         LEFT JOIN Addresses a ON i.addressId = a.id         
         WHERE i.createdBy = ?

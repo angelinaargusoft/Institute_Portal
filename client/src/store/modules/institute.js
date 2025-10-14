@@ -82,6 +82,7 @@ const actions = {
       let savedInstitute;
       if (!instituteId) {
         // Create new institute
+        institute.status = "active";
         savedInstitute = await createInstitute(institute);
       } else {
         // Update existing institute

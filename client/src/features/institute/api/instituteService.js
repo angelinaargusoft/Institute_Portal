@@ -11,9 +11,10 @@ export const getInstituteById = async (instituteId) => {
 };
 // Create a new institute
 export const createInstitute = async (data) => {
-  console.log(data)
+  console.log(data);
   const res = await api.post(`/institutes`, data);
-  return res.data;
+  console.log(res.data)
+  return res.data.institute;
 };
 // Update institute details
 export const updateInstitute = async (instituteId, data) => {

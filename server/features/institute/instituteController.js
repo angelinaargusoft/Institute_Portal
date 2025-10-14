@@ -2,6 +2,7 @@ const instituteService = require('./instituteService');
 
 async function createInstitute(req, res, next) {
     try {
+        console.log(req.body);
         //const userId = req.user.userId; // from auth middleware
         const institute = await instituteService.createInstitute(req.body);
         res.status(201).json({ message: "Institute created", institute });

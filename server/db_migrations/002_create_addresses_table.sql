@@ -1,6 +1,5 @@
 CREATE TABLE IF NOT EXISTS Addresses (
     id CHAR(36) PRIMARY KEY,
-    type ENUM('permanent','current') DEFAULT 'current',
     addressLine VARCHAR(255) NOT NULL,
     city VARCHAR(100) NOT NULL,
     state VARCHAR(100) NOT NULL,

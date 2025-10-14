@@ -83,18 +83,14 @@ const onSave = async () => {
     createdBy: user.value.id,
     address: { ...localInstitute.value.address },
   };
-  console.log(localInstitute.value)
-  const ok = await store.dispatch("institute/saveInstitute", {
-    instituteId: isEdit.value? route.params.id : null,
-    institute: payload,
-  });
-  if(ok){
-    const instituteId = isEdit.value
-      ? route.params.id
-      : ok.id || store.getters["institute/currentInstitute"]?.id;
-    // Redirect to the institute dashboard
-    if (instituteId) router.push(`/dashboard/admin/${instituteId}`);
-  }
+  const saved = await store.dispatch("institute/saveInstitute", {
+  instituteId: isEdit.value ? route.params.id : null,
+  institute: payload,
+});
+if (saved) {
+  const instituteId = isEdit.value ? route.params.id : saved.id;
+  if (instituteId) router.push(`/dashboard/admin/${instituteId}`);
+}
 };
 </script>
 <style scoped>
