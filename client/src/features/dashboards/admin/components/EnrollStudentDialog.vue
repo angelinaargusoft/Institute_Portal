@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" max-width="500">
+    <v-dialog v-model="dialog" max-width="600">
       <v-card>
         <v-card-title class="text-h6 font-weight-bold">Enroll Student</v-card-title>
         <v-card-text>

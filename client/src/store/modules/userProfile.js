@@ -1,22 +1,61 @@
 import {
+  getAllProfiles,
   getProfileByUserId,
   createProfile,
   updateBaseProfile,
   updateFacultyProfile,
   updateStudentProfile,
 } from "@/features/user/api/userProfileService";
+
+import {
+  getAllUsers
+} from "@/features/auth/api/userService";
+
 const state = () => ({
+  allUsers: [],
   profile: null,
+  allProfiles: [],
   loading: false,
   error: null,
 });
 const getters = {
+  allUsers: (state) => state.allUsers,
   profile: (state) => state.profile,
+  allProfiles: (state)=> state.allProfiles,
   loading: (state) => state.loading,
   error: (state) => state.error,
 };
 const actions = {
-  // :white_check_mark: Fetch user profile
+  async fetchAllUsers({commit}){
+    commit("setLoading", true);
+    commit("setError", null);
+    try{
+      const users = await getAllUsers();
+      commit("setAllUsers", users);
+      return users;
+    } catch (err){
+      commit("setError", err.message);
+      return [];
+    } finally{
+      commit("setLoding", false);
+    }
+  },
+  async fetchAllProfiles({commit}){
+    commit("setLoading", true);
+    commit("setError", null);
+    try{
+      const profiles = await getAllProfiles();
+      commit("setAllProfiles", profiles);
+      return profiles;
+    } catch(err){
+      commit("setError", err.message);
+      return [];
+    } finally{
+      commit("setLoading", false);
+    }
+
+  },
+
   async fetchProfile({ commit }, userId) {
     commit("setLoading", true);
     commit("setError", null);
@@ -42,7 +81,7 @@ const actions = {
       commit("setLoading", false);
     }
   },
-  // :white_check_mark: Create or update base profile
+
   async saveProfile({ commit, state }, { userId, profile }) {
     commit("setLoading", true);
     commit("setError", null);
@@ -74,7 +113,7 @@ const actions = {
       commit("setLoading", false);
     }
   },
-  // :white_check_mark: Save faculty-specific details
+
   async saveFacultyProfile({ commit }, { userId, profile }) {
     return await handleRoleProfile(commit, updateFacultyProfile, userId, {
       facultyProfilePic: profile.facultyProfilePic || "",
@@ -84,7 +123,7 @@ const actions = {
       yearsOfExperience: profile.yearsOfExperience || 0,
     });
   },
-  // :white_check_mark: Save student-specific details
+
   async saveStudentProfile({ commit }, { userId, profile }) {
     return await handleRoleProfile(commit, updateStudentProfile, userId, {
       studentProfilePic: profile.studentProfilePic || "",
@@ -95,7 +134,7 @@ const actions = {
     });
   },
 };
-// :small_blue_diamond: Helper to handle faculty/student save (DRY)
+
 async function handleRoleProfile(commit, updateFn, userId, payload) {
   commit("setLoading", true);
   commit("setError", null);
@@ -111,7 +150,9 @@ async function handleRoleProfile(commit, updateFn, userId, payload) {
   }
 }
 const mutations = {
+  setAllUsers: (state, users) => (state.allUsers = users),
   setProfile: (state, profile) => (state.profile = profile),
+  setAllProfiles: (state, profiles) => (state.allProfiles = profiles),
   setLoading: (state, val) => (state.loading = val),
   setError: (state, err) => (state.error = err),
 };

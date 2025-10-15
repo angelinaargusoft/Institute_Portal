@@ -1,4 +1,13 @@
 const userProfileService = require('./userProfileService');
+
+async function getAllProfiles(req, res) {
+    try {
+        const profiles = await userProfileService.getAllProfiles();
+        res.json(profiles);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
 // Create base profile
 async function createProfile(req, res) {
     try {
@@ -61,6 +70,7 @@ async function deleteProfile(req, res) {
     }
 }
 module.exports = {
+    getAllProfiles,
     createProfile,
     getProfileByUserId,
     updateBaseProfile,

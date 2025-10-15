@@ -11,6 +11,16 @@ function normalizeGender(gender){
     return null;
 }
 
+async function getAllProfiles() {
+    const query = `
+        SELECT up.*, a.addressLine, a.city, a.state, a.country, a.postalCode
+        FROM UserProfiles up
+        LEFT JOIN Addresses a ON up.addressId = a.id
+    `;
+    const [rows] = await pool.execute(query);
+    return rows;
+}
+
 async function getByUserId(userId) {
     const query = `
         SELECT up.*, a.addressLine, a.city, a.state, a.country, a.postalCode
@@ -123,6 +133,7 @@ async function remove(userId) {
 }
 
 module.exports = {
+    getAllProfiles,
     getByUserId,
     createBaseProfile,
     updateBaseProfile,

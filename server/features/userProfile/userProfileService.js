@@ -1,5 +1,10 @@
 const userProfileModel = require('./userProfileModel');
 
+
+async function getAllProfiles() {
+    return await userProfileModel.getAllProfiles();
+}
+
 async function getProfileByUserId(userId) {
     return await userProfileModel.getByUserId(userId);
 }
@@ -29,6 +34,7 @@ async function deleteProfile(userId) {
 }
 
 module.exports = {
+    getAllProfiles,
     getProfileByUserId,
     createProfile,
     updateBaseProfile,

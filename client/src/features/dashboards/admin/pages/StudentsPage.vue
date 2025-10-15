@@ -67,22 +67,54 @@
     </v-container>
   </template>
   <script setup>
-  import { ref, computed } from "vue";
+  import { ref, computed, onMounted } from "vue";
+  import { useStore } from "vuex";
   import StudentRow from "../components/StudentRow.vue";
   import EnrollStudentDialog from "../components/EnrollStudentDialog.vue";
-  // Dummy students
-  const students = ref([
-    { id: 1, name: "Rohit Sharma", roll: "101", class: "10", section: "A", email: "rohit@example.com", photo: "" },
-    { id: 2, name: "Sneha Patel", roll: "102", class: "10", section: "B", email: "sneha@example.com", photo: "" },
-    { id: 3, name: "Amit Kumar", roll: "103", class: "9", section: "A", email: "amit@example.com", photo: "" },
-    { id: 4, name: "Priya Singh", roll: "104", class: "8", section: "C", email: "priya@example.com", photo: "" },
-  ]);
+
+  const store = useStore();
+
   // Filters
   const classOptions = ["8", "9", "10", "11", "12"];
   const sectionOptions = ["A", "B", "C", "D"];
   const selectedClass = ref(null);
   const selectedSection = ref(null);
   const searchQuery = ref("");
+
+  // Dialog handling
+  const openEnrollDialog = ref(false);
+
+  //fetch data
+  onMounted(async()=>{
+    const instituteId = 1; //check
+    await store.dispatch("studentEnrollment/fetchEnrollmentsByInstitute", instituteId);
+    await store.dispatch("userProfile/fetchAllProfiles"); //check
+    await store.dispatch("auth/fetchAllUsers"); //check
+  })
+
+  // Combine data from 3 stores
+  const enrollments = computed(() => store.getters["studentEnrollment/enrollments"] || []);
+  const profiles = computed(() => store.getters["profile/profiles"] || []); //check
+  const users = computed(() => store.getters["auth/users"] || []); //check
+
+  //students list
+  const students = computed(() => {
+  return enrollments.value.map((enrollment) => {
+    const profile = profiles.value.find((p) => p.userId === enrollment.userId) || {};
+    const user = users.value.find((u) => u.id === enrollment.userId) || {};
+    return {
+      id: enrollment.id,
+      userId: enrollment.userId,
+      name: profile.name || "N/A",
+      photo: profile.photo || "https://via.placeholder.com/36",
+      email: user.email || "N/A",
+      roll: enrollment.rollNumber || "-",
+      class: enrollment.className || "",
+      section: enrollment.section || "",
+    };
+  });
+});
+
   const filteredStudents = computed(() =>
     students.value.filter((s) => {
       const matchesClass = selectedClass.value ? s.class === selectedClass.value : true;
@@ -95,12 +127,7 @@
       return matchesClass && matchesSection && matchesSearch;
     })
   );
-  // Dialog handling
-  const openEnrollDialog = ref(false);
-  function confirmEnrollment() {
-    alert("Enrollment saved (mock action)");
-    openEnrollDialog.value = false;
-  }
+  
   function handleEnrollment(data){
     console.log("Enrolled student:", data);
   }

@@ -1,4 +1,10 @@
 import api from "@/plugins/axios"; // your Axios instance
+
+// Fetch all profiles
+export const getAllProfiles = async () => {
+  const res = await api.get(`/userProfiles`);
+  return res.data;
+};
 // Fetch profile by user ID
 export const getProfileByUserId = async (userId) => {
   const res = await api.get(`/userProfiles/${userId}`);

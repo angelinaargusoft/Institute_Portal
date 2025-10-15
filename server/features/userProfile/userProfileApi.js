@@ -3,6 +3,7 @@ const router = express.Router();
 const userProfileController = require('./userProfileController');
 const { authenticate } = require('../../middlewares/authMiddleware');
 
+router.get('/', userProfileController.getAllProfiles);
 router.post('/', authenticate, userProfileController.createProfile);
 router.get('/:userId', authenticate, userProfileController.getProfileByUserId);
 router.put('/:userId/base', authenticate, userProfileController.updateBaseProfile);
